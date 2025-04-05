@@ -66,6 +66,7 @@ typedef struct {
     //prototype
     SDL_Rect b_rect;
     SDL_Surface *basic;
+    SDL_Surface *final;
     // custom
     SDL_Rect rect;
     SDL_Surface * not_hovered; ;
