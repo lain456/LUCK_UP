@@ -8,10 +8,17 @@
 #include <SDL/SDL_mixer.h>
 #include <SDL/SDL_ttf.h>
 #include <SDL/SDL_image.h>
+#include <stdlib.h>
+#include <stdio.h>
+#include<string.h>
+#include<math.h>
+
+
 
 // game window dimensions :
-#define WIDTH 800
-#define HEIGHT 600
+#define WIDTH 1080
+#define HEIGHT 720
+
 
 
 
@@ -19,6 +26,31 @@
 // bird dimensions in px :
 #define BIRD_OG_WIDTH 829
 #define BIRD_OG_HEIGHT 773
+
+
+
+//paths used :
+//basic config
+#define BACK_PNG_PATH "../src/assets/grphics/basic/back.png"
+#define BUTTON_PNG_PATH "../src/assets/grphics/basic/button.png"
+#define BUTTON_PNG2_PATH "../src/assets/grphics/basic/button_selected.png"
+//************************************************************************************//
+//bird config
+#define BIRD_R01_PATH "../src/assets/grphics/characters/bird/flying to the right/b0.png"
+#define BIRD_R02_PATH "../src/assets/grphics/characters/bird/flying to the right/b1.png"
+#define BIRD_R03_PATH "../src/assets/grphics/characters/bird/flying to the right/b3.png"
+#define BIRD_R04_PATH "../src/assets/grphics/characters/bird/flying to the right/b4.png"
+//************************************************************************************//
+#define BIRD_L01_PATH "../src/assets/grphics/characters/bird/flying to the right/b0.png"
+#define BIRD_L02_PATH "../src/assets/grphics/characters/bird/flying to the right/b1.png"
+#define BIRD_L03_PATH "../src/assets/grphics/characters/bird/flying to the right/b3.png"
+#define BIRD_L04_PATH "../src/assets/grphics/characters/bird/flying to the right/b4.png"
+//************************************************************************************//
+//font config :
+#define FREDOKA_PATH "../src/assets/font/fredoka-one.one-regular.ttf"
+//************************************************************************************//
+
+
 
 
 // gameplay :
@@ -29,15 +61,26 @@
 
 
 
-
 typedef struct {
+    int h,w,x,y,x_center,y_center;
+    //prototype
+    SDL_Rect b_rect;
+    SDL_Surface *basic;
+    // custom
     SDL_Rect rect;
-    //SDL_Surface * default ;
+    SDL_Surface * not_hovered; ;
     SDL_Surface * hovered ;
+    //text
     char *text;
+    SDL_Color txt_color;
+    SDL_Surface *text_surface;
+    //state
     int isHovered;
     int isPressed;
 }Button;
+
+
+
 
 
 
@@ -84,11 +127,11 @@ typedef struct {
 
     // for the first menu :
     Button *main_menu;
+    int bt_count;
 
 
     // background
     SDL_Surface *background;
-
 }Game;
 
 

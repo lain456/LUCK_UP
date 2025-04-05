@@ -8,7 +8,7 @@
 void load_background(Game *game) {
     SDL_Surface *background;
     //load
-    background = IMG_Load("/home/lain/Desktop/nerding/SDL/LUCK UP/src/assets/grphics/basic/back.png");
+    background = IMG_Load(BACK_PNG_PATH);
     //scale
     background = scaleSurface(background,game->width, game->height);
 
