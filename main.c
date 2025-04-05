@@ -7,7 +7,7 @@
 
 
 /*
- *to do list :
+ *to do list  :
  *******************************************************************************************************************************
  *-     manual text render
  *-     check if the single button is being pressed
