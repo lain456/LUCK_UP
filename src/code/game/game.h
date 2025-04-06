@@ -33,7 +33,7 @@
 //basic config
 #define BACK_PNG_PATH "../src/assets/grphics/basic/back.png"
 #define BUTTON_PNG_PATH "../src/assets/grphics/basic/button.png"
-#define BUTTON_PNG2_PATH "../src/assets/grphics/basic/button_selected.png"
+#define BUTTON_PNG2_PATH "../src/assets/grphics/basic/button_2.png"
 //************************************************************************************//
 //bird config
 #define BIRD_R01_PATH "../src/assets/grphics/characters/bird/flying to the right/b0.png"
@@ -58,11 +58,20 @@
 #define MOVE_SPEED 5
 #define FPS 60
 
+typedef struct {
+    // function input
+    char *writen;
+    SDL_Color color;
+    TTF_Font *font;
+    // function output - AKA requre treatment
 
+    SDL_Surface *surf;
+    SDL_Rect rect;
+}Text;
 
 
 typedef struct {
-    int h,w,x,y,x_center,y_center;
+    int h,w,x,y,x_center,y_center,type;
     //prototype
     SDL_Rect b_rect;
     SDL_Surface *basic;
@@ -72,9 +81,8 @@ typedef struct {
     SDL_Surface * not_hovered; ;
     SDL_Surface * hovered ;
     //text
-    char *text;
-    SDL_Color txt_color;
-    SDL_Surface *text_surface;
+    Text txt;
+
     //state
     int isHovered;
     int isPressed;
@@ -121,6 +129,7 @@ typedef struct {
     int state;
     int quite;
     Player *player;
+    TTF_Font *main_font;
 
 
     // this is a matrix , rows are menus and cols are the buttons for each menu
@@ -131,12 +140,16 @@ typedef struct {
     int bt_count;
 
 
+
+    //often used suf will be here :
     // background
     SDL_Surface *background;
+    SDL_Surface *b_yellow;
+    SDL_Surface *b_purple;
 }Game;
 
 
-
+void Ini_Game(Game *game);
 
 
 

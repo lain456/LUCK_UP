@@ -11,9 +11,20 @@
 
 
 
-Button *create_button_list( char *text_list[],int size);
+Button *create_buttons( char *text_list[],int size);
 
-void render_buttton(Game *game, Button button[],int b_cnt ) ;
+void render_buttons(Game *game, Button button[],int b_cnt ) ;
+
+
+
+//Button create_button( char *text_list[],i;
+
+
+void render_button(Game *game,Button b);
+
+
+
+Button *create_button(Game *game ,int x,int y,int h,int w ,char* text ,SDL_Color color ,int type );
 
 
 

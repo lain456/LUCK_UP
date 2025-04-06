@@ -9,15 +9,26 @@
 /*
  *to do list  :
  *******************************************************************************************************************************
- *-     manual text render
+ *-     manual text render    |                                                                                       done!
+ *                            |-> apply                                                                               done!
+ *
+ *-
+ *
+ *-     scale button handling   |
+ *                              |-> render buttons                                                                     done!
+ *                              |-> create buttons :
+ *                                  |> manual                                                                          done!
+ *                                  |> automation                                                                      done!
+ *******************************************Sun Apr 6 02:11:29 AM CET 2025******************************************************
+ *
  *-     check if the single button is being pressed
- *-     scale button handling
  *-     create a menu
  *-     menu handling
  *-     travel between menus
  *-     create a tree like data structure where each node can point to a menu (menu mapping )
  *-     handle button actions using a current button list
  *-     move to the gameplay
+ *-     player mvt
  *-     handle animation
  *-     handle player hit-box and collisions
  *-     handle pixel collision
@@ -26,7 +37,92 @@
  *                                                                                                                  -lain
  */
 
+
+
+
+
+
+
+
+
+
+
+/*
+ *
+ **********************************************************
+ * * *       T E S T I N G        F I E L D           * * *
+ **********************************************************
+ *
+ */
+
+int test( ) {
+    printf("testing ... \n");
+    SDL_Init(SDL_INIT_VIDEO);
+    TTF_Init();
+    int width = 600 ,height = 400;
+    int quit =0;
+
+    SDL_Surface *screen = SDL_SetVideoMode(width, height, 32, SDL_SWSURFACE);
+    SDL_FillRect(screen, NULL, SDL_MapRGB(screen->format, 10, 10, 10));
+
+
+
+
+    // Text creation
+    TTF_Font *font = TTF_OpenFont("../src/assets/font/fredoka-one.one-regular.ttf", 28);
+    SDL_Surface *text = TTF_RenderText_Blended(font, "play", (SDL_Color){100, 100, 100});
+    SDL_Rect textRect = {(width -text->w)/2  , (height - text->h)/2, text->w, text->h};
+
+
+
+    // target surf
+    SDL_Surface *green = create_color_surface(300 , 50 , 220,200,200);
+    SDL_Rect green_rect = {10,10,green->w,green->h};
+
+
+    // modification :
+    textRect = (SDL_Rect){ green_rect.x + (green_rect.w - textRect.w)/2 , green_rect.y + (green_rect.h - textRect.h)/2 , textRect.w , textRect.h};
+
+
+
+
+
+
+    SDL_Event event;
+    while (!quit) {
+        while (SDL_PollEvent(&event)) {
+            if (event.type == SDL_QUIT) {
+                quit = 1;
+            }
+        }
+        SDL_BlitSurface(green, NULL, screen, &green_rect);
+        SDL_BlitSurface(text, NULL, screen, &textRect);
+        SDL_Flip(screen);
+    }
+
+
+
+    SDL_Quit();
+    return 0;
+}
+
+
+
+
+
+
+
+
+
+
 int main(int argc, char *argv[]) {
+
+   // obv testing ...
+   // return test();
+
+
+
+
     printf("game running..\n");
 
     if (SDL_Init(SDL_INIT_VIDEO | SDL_INIT_VIDEO | SDL_DOUBLEBUF )<0) {
@@ -51,36 +147,12 @@ int main(int argc, char *argv[]) {
     }
 
 
-
-
-    // load font :
-    TTF_Font *font = NULL;
-    font = TTF_OpenFont(FREDOKA_PATH,28);
-
-    // define text surf
-    SDL_Color color = {255,255,255};
-    SDL_Surface *text_surface = NULL;
-
-
-    // render text :
-    text_surface = TTF_RenderText_Solid(font,"play",color);
-
-
-
+    // init game
     Game game;
-    game.height = HEIGHT;
-    game.width = WIDTH;
-    game.title = "LUCK UP";
-    game.state = 1;
-    game.quite = 0;
-    game.screen = SDL_SetVideoMode(game.width,game.height,32,SDL_SWSURFACE | SDL_RESIZABLE);
+
+     Ini_Game(&game);
 
 
-    // this is how you load images
-    SDL_Surface *bird = IMG_Load(BIRD_R01_PATH);
-
-    // scale its size:
-    bird = scaleSurface(bird, bird->w /3, bird->h/3 );
 
 
     // load BG
@@ -88,120 +160,53 @@ int main(int argc, char *argv[]) {
 
 
 
-    // an array of text
-    char *button_name_list[] = {"play"};
-    int b_cnt = sizeof(button_name_list)/sizeof(*button_name_list);
 
-    Button button[b_cnt];
+    // an array of text
+
 
     // discovered i3a9a fi C
-    printf("%d\n",b_cnt);
 
 
 
 
 
     //declaire a button
-    Button pur;
-    pur.text = "play";
-    pur.txt_color = (SDL_Color){225,225,225}; //red ;
-
-    pur.w = 300;
-    pur.h = 200;
-    pur.x = (WIDTH - pur.w)/2 ;
-    pur.y = (HEIGHT - pur.h)/2 ;
-
-
-
-
-    //load image
-    SDL_Surface *purple = IMG_Load(BUTTON_PNG_PATH );
-
-    //scale
-    purple = scaleSurface(purple, pur.w, pur.h );
+    Button pur,yel;
+    pur.txt.writen = "PLAY";    //
+    pur.txt.color = (SDL_Color){0,0,0};//
+    pur.isHovered = 0;//
+    pur.w = 300;//
+    pur.h = 200;//
+    pur.x = (WIDTH - pur.w)/2 ;//
+    pur.y = (HEIGHT - pur.h)/2 ;//
+    pur.rect = (SDL_Rect) { pur.x,pur.y,pur.w,pur.h };//
+    pur.not_hovered =  scaleSurface(game.b_purple, pur.w, pur.h );//
+    pur.hovered = scaleSurface(game.b_yellow, pur.w, pur.h );//
 
 
 
-
-
-
-    // basic : ( trying to figure out text )
-
-
-
-    // from tools
-    //pur.basic = create_color_surface(300 , 200 ,161,134,190 );
-
+    //pur.hovered = game.b_purple;
+    //pur.not_hovered = game.b_yellow;
 
 
     // this values where tested manually they only work for my image -lain (the work has to be revisited if another button was chosen)
-    pur.b_rect = (SDL_Rect){(pur.x + pur.w/22) , (pur.y + pur.h/2.9), (pur.w - pur.w/15), pur.h/3};
-    // based on this rect we will create
+    pur.b_rect = (SDL_Rect){(pur.x + pur.w/22) , (pur.y + pur.h/2.9), (pur.w - pur.w/15), pur.h/3};//
+    // click / text -  surf
+    //pur.basic = create_color_surface(pur.b_rect.w , pur.b_rect.h ,161,134,190 );
+    pur.basic = create_color_surface(pur.b_rect.w , pur.b_rect.h ,pur.txt.color.r ,pur.txt.color.g ,pur.txt.color.b );//
 
 
-
-    pur.basic = create_color_surface(pur.b_rect.w , pur.b_rect.h ,0,0,0 );
-
-
-
-
+    // txt surf
+    pur.txt.surf = TTF_RenderText_Blended(game.main_font, pur.txt.writen, pur.txt.color);//
+    //txt rect
+    pur.txt.rect = (SDL_Rect){0, 0, pur.txt.surf->w, pur.txt.surf->h};//
 
 
+    pur.txt.rect = (SDL_Rect){ pur.b_rect.x + (pur.b_rect.w - pur.txt.rect.w)/2 , pur.b_rect.y + (pur.b_rect.h - pur.txt.rect.h)/2 , pur.txt.rect.w , pur.txt.rect.h};//
 
+    yel = *create_button(&game, (WIDTH - 200 )/2, pur.y + pur.txt.rect.h + 50 ,200 ,200,"exit",(SDL_Color){0,0,0},1);
+    yel.isHovered = 1;
 
-
-    // custom :
-    //assing surf
-    pur.hovered = purple;
-    // assign rect
-    pur.rect = (SDL_Rect) { pur.x,pur.y,pur.w,pur.h };
-
-
-    // text surf :
-    pur.text_surface = create_centered_label(pur.b_rect,font,pur.text,pur.txt_color);
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-    //render_buttton(&game,game.main_menu,1);
-
-
-
-
-
-
-    // att to create buttons
-
-
-
-
-
-    // make a white surf
-    SDL_Surface *green = create_color_surface(game.width,game.height,225,225,225);
-
-
-    //printf("%s\n",game.title);
     SDL_Event event;
     while(!game.quite ) {
         while (SDL_PollEvent(&event)) {
@@ -212,15 +217,22 @@ int main(int argc, char *argv[]) {
 
 
 
-        SDL_BlitSurface(game.background,NULL,game.screen,NULL);
-        //SDL_BlitSurface(bird,NULL,game.screen,NULL);
+
+
+
+        //SDL_BlitSurface(game.background,NULL,game.screen,NULL);
+        render_button(&game,pur);
+        render_button(&game,yel);
+
+
+
 
 
 
         // basic
-        SDL_BlitSurface(pur.basic,NULL,game.screen,&pur.b_rect);
+        //SDL_BlitSurface(pur.basic,NULL,game.screen,&pur.b_rect);
         // rend  button att
-        SDL_BlitSurface(pur.hovered,NULL,game.screen,&pur.rect);
+        //SDL_BlitSurface(pur.hovered,NULL,game.screen,&pur.rect);
 
 
         //render text :
@@ -248,71 +260,7 @@ int main(int argc, char *argv[]) {
 
 
 
-/*
- *
- **********************************************************
- * * *       T E S T I N G        F I E L D           * * *
- **********************************************************
- *
- */
 
 
 
-
-
-
-
-
-/*
-#include <SDL/SDL.h>
-#include <SDL/SDL_ttf.h>
-
-int main() {
-    SDL_Init(SDL_INIT_VIDEO);
-    TTF_Init();
-    SDL_Surface *screen = SDL_SetVideoMode(640, 480, 32, SDL_SWSURFACE);
-    SDL_FillRect(screen, NULL, SDL_MapRGB(screen->format, 100, 100, 100));
-
-    // Intersecting squares
-    SDL_Surface *redSquare = SDL_CreateRGBSurface(SDL_SWSURFACE, 50, 50, 32, 0, 0, 0, 0);
-    SDL_FillRect(redSquare, NULL, SDL_MapRGB(redSquare->format, 255, 0, 0));
-    SDL_Surface *blueSquare = SDL_CreateRGBSurface(SDL_SWSURFACE, 50, 50, 32, 0, 0, 0, 0);
-    SDL_FillRect(blueSquare, NULL, SDL_MapRGB(blueSquare->format, 0, 0, 255));
-    SDL_Surface *yellowSquare = SDL_CreateRGBSurface(SDL_SWSURFACE, 50, 50, 32, 0, 0, 0, 0);
-    SDL_FillRect(yellowSquare, NULL, SDL_MapRGB(yellowSquare->format, 255, 255, 0));
-    SDL_Surface *purpleSquare = SDL_CreateRGBSurface(SDL_SWSURFACE, 50, 50, 32, 0, 0, 0, 0);
-    SDL_FillRect(purpleSquare, NULL, SDL_MapRGB(purpleSquare->format, 128, 0, 128));
-
-    SDL_Rect redPos = {120, 120, 0, 0};
-    SDL_Rect bluePos = {140, 120, 0, 0};
-    SDL_Rect yellowPos = {120, 140, 0, 0};
-    SDL_Rect purplePos = {140, 140, 0, 0};
-
-    SDL_BlitSurface(redSquare, NULL, screen, &redPos);
-    SDL_BlitSurface(blueSquare, NULL, screen, &bluePos);
-    SDL_BlitSurface(yellowSquare, NULL, screen, &yellowPos);
-    SDL_BlitSurface(purpleSquare, NULL, screen, &purplePos);
-
-    // Text directly over squares
-    TTF_Font *font = TTF_OpenFont("../src/assets/font/fredoka-one.one-regular.ttf", 28);
-    SDL_Surface *text = TTF_RenderText_Blended(font, "Hello", (SDL_Color){255, 255, 255});
-    if (text) {
-        SDL_SetAlpha(text, SDL_SRCALPHA, 255);
-
-        SDL_Rect textPos = {110, 125, 0, 0};
-
-
-        SDL_BlitSurface(text, NULL, screen, &textPos);
-        printf("Text rendered: %dx%d\n", text->w, text->h);
-    } else {
-        printf("Text failed: %s\n", TTF_GetError());
-    }
-
-    SDL_Flip(screen);
-    SDL_Delay(3000);
-    SDL_Quit();
-    return 0;
-}
-
-*/
 
