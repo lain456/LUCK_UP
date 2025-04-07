@@ -99,13 +99,15 @@ Button *create_button(Game *game ,int x,int y,int h,int w ,char* text ,SDL_Color
             button->b_rect.y = y + (h/2.9);
             button->b_rect.w = button->w  -(w/15);
             button->b_rect.h = button->h - (h*2/3);
-        }
+
+        }break;
+
         default:
             printf("no button type exist ");
     }
 
 
-    // basic surf
+    // basic surf..
     button->basic = create_color_surface(button->b_rect.w , button->b_rect.h ,0,0,0 );
 
     //text rect

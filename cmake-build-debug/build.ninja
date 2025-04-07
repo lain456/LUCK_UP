@@ -91,6 +91,13 @@ build CMakeFiles/LUCK_UP.dir/src/code/game/button.c.o: C_COMPILER__LUCK_UP_unsca
   OBJECT_DIR = CMakeFiles/LUCK_UP.dir
   OBJECT_FILE_DIR = CMakeFiles/LUCK_UP.dir/src/code/game
 
+build CMakeFiles/LUCK_UP.dir/src/code/enemy/enemy.c.o: C_COMPILER__LUCK_UP_unscanned_Debug /home/lain/Desktop/nerding/SDL/LUCK$ UP/src/code/enemy/enemy.c || cmake_object_order_depends_target_LUCK_UP
+  DEP_FILE = CMakeFiles/LUCK_UP.dir/src/code/enemy/enemy.c.o.d
+  FLAGS = -g -std=gnu11 -fdiagnostics-color=always
+  INCLUDES = -I/usr/include/SDL
+  OBJECT_DIR = CMakeFiles/LUCK_UP.dir
+  OBJECT_FILE_DIR = CMakeFiles/LUCK_UP.dir/src/code/enemy
+
 
 # =============================================================================
 # Link build statements for EXECUTABLE target LUCK_UP
@@ -99,9 +106,9 @@ build CMakeFiles/LUCK_UP.dir/src/code/game/button.c.o: C_COMPILER__LUCK_UP_unsca
 #############################################
 # Link the executable LUCK_UP
 
-build LUCK_UP: C_EXECUTABLE_LINKER__LUCK_UP_Debug CMakeFiles/LUCK_UP.dir/main.c.o CMakeFiles/LUCK_UP.dir/src/code/game/game.c.o CMakeFiles/LUCK_UP.dir/src/code/tools/tools.c.o CMakeFiles/LUCK_UP.dir/src/code/Player/player.c.o CMakeFiles/LUCK_UP.dir/src/code/Background/background.c.o CMakeFiles/LUCK_UP.dir/src/code/game/button.c.o | /usr/lib/x86_64-linux-gnu/libSDLmain.a /usr/lib/x86_64-linux-gnu/libSDL.so /usr/lib/x86_64-linux-gnu/libSDL_ttf.so /usr/lib/x86_64-linux-gnu/libSDL_image.so /usr/lib/x86_64-linux-gnu/libSDL_mixer.so
+build LUCK_UP: C_EXECUTABLE_LINKER__LUCK_UP_Debug CMakeFiles/LUCK_UP.dir/main.c.o CMakeFiles/LUCK_UP.dir/src/code/game/game.c.o CMakeFiles/LUCK_UP.dir/src/code/tools/tools.c.o CMakeFiles/LUCK_UP.dir/src/code/Player/player.c.o CMakeFiles/LUCK_UP.dir/src/code/Background/background.c.o CMakeFiles/LUCK_UP.dir/src/code/game/button.c.o CMakeFiles/LUCK_UP.dir/src/code/enemy/enemy.c.o | /usr/lib/x86_64-linux-gnu/libSDLmain.a /usr/lib/x86_64-linux-gnu/libSDL.so /usr/lib/x86_64-linux-gnu/libSDL_ttf.so /usr/lib/x86_64-linux-gnu/libSDL_image.so /usr/lib/x86_64-linux-gnu/libSDL_mixer.so
   FLAGS = -g
-  LINK_LIBRARIES = /usr/lib/x86_64-linux-gnu/libSDLmain.a  /usr/lib/x86_64-linux-gnu/libSDL.so  /usr/lib/x86_64-linux-gnu/libSDL_ttf.so  /usr/lib/x86_64-linux-gnu/libSDL_image.so  /usr/lib/x86_64-linux-gnu/libSDL_mixer.so  -lm
+  LINK_LIBRARIES = /usr/lib/x86_64-linux-gnu/libSDLmain.a  -lSDL  -lSDL_ttf  -lSDL_image  -lSDL_mixer  -lm
   OBJECT_DIR = CMakeFiles/LUCK_UP.dir
   POST_BUILD = :
   PRE_LINK = :

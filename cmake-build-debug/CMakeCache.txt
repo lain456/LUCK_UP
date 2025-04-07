@@ -358,13 +358,13 @@ CMAKE_UNAME:INTERNAL=/usr/bin/uname
 //ADVANCED property for variable: CMAKE_VERBOSE_MAKEFILE
 CMAKE_VERBOSE_MAKEFILE-ADVANCED:INTERNAL=1
 //Details about finding SDL
-FIND_PACKAGE_MESSAGE_DETAILS_SDL:INTERNAL=[/usr/lib/x86_64-linux-gnu/libSDLmain.a;/usr/lib/x86_64-linux-gnu/libSDL.so][/usr/include/SDL][v1.2.68()]
+FIND_PACKAGE_MESSAGE_DETAILS_SDL:INTERNAL=[/usr/lib/x86_64-linux-gnu/libSDLmain.a;/usr/lib/x86_64-linux-gnu/libSDL.so][/usr/include/SDL][v()]
 //Details about finding SDL_image
-FIND_PACKAGE_MESSAGE_DETAILS_SDL_image:INTERNAL=[/usr/lib/x86_64-linux-gnu/libSDL_image.so][/usr/include/SDL][v1.2.12()]
+FIND_PACKAGE_MESSAGE_DETAILS_SDL_image:INTERNAL=[/usr/lib/x86_64-linux-gnu/libSDL_image.so][/usr/include/SDL][v()]
 //Details about finding SDL_mixer
-FIND_PACKAGE_MESSAGE_DETAILS_SDL_mixer:INTERNAL=[/usr/lib/x86_64-linux-gnu/libSDL_mixer.so][/usr/include/SDL][v1.2.12()]
+FIND_PACKAGE_MESSAGE_DETAILS_SDL_mixer:INTERNAL=[/usr/lib/x86_64-linux-gnu/libSDL_mixer.so][/usr/include/SDL][v()]
 //Details about finding SDL_ttf
-FIND_PACKAGE_MESSAGE_DETAILS_SDL_ttf:INTERNAL=[/usr/lib/x86_64-linux-gnu/libSDL_ttf.so][/usr/include/SDL][v2.0.11()]
+FIND_PACKAGE_MESSAGE_DETAILS_SDL_ttf:INTERNAL=[/usr/lib/x86_64-linux-gnu/libSDL_ttf.so][/usr/include/SDL][v()]
 //Details about finding Threads
 FIND_PACKAGE_MESSAGE_DETAILS_Threads:INTERNAL=[TRUE][v()]
 //ADVANCED property for variable: SDL_IMAGE_INCLUDE_DIR

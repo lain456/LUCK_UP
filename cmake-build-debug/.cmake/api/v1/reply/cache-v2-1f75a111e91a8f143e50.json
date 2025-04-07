@@ -1035,7 +1035,7 @@
 				}
 			],
 			"type" : "INTERNAL",
-			"value" : "[/usr/lib/x86_64-linux-gnu/libSDLmain.a;/usr/lib/x86_64-linux-gnu/libSDL.so][/usr/include/SDL][v1.2.68()]"
+			"value" : "[/usr/lib/x86_64-linux-gnu/libSDLmain.a;/usr/lib/x86_64-linux-gnu/libSDL.so][/usr/include/SDL][v()]"
 		},
 		{
 			"name" : "FIND_PACKAGE_MESSAGE_DETAILS_SDL_image",
@@ -1047,7 +1047,7 @@
 				}
 			],
 			"type" : "INTERNAL",
-			"value" : "[/usr/lib/x86_64-linux-gnu/libSDL_image.so][/usr/include/SDL][v1.2.12()]"
+			"value" : "[/usr/lib/x86_64-linux-gnu/libSDL_image.so][/usr/include/SDL][v()]"
 		},
 		{
 			"name" : "FIND_PACKAGE_MESSAGE_DETAILS_SDL_mixer",
@@ -1059,7 +1059,7 @@
 				}
 			],
 			"type" : "INTERNAL",
-			"value" : "[/usr/lib/x86_64-linux-gnu/libSDL_mixer.so][/usr/include/SDL][v1.2.12()]"
+			"value" : "[/usr/lib/x86_64-linux-gnu/libSDL_mixer.so][/usr/include/SDL][v()]"
 		},
 		{
 			"name" : "FIND_PACKAGE_MESSAGE_DETAILS_SDL_ttf",
@@ -1071,7 +1071,7 @@
 				}
 			],
 			"type" : "INTERNAL",
-			"value" : "[/usr/lib/x86_64-linux-gnu/libSDL_ttf.so][/usr/include/SDL][v2.0.11()]"
+			"value" : "[/usr/lib/x86_64-linux-gnu/libSDL_ttf.so][/usr/include/SDL][v()]"
 		},
 		{
 			"name" : "FIND_PACKAGE_MESSAGE_DETAILS_Threads",
