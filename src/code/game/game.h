@@ -20,6 +20,10 @@
 #define HEIGHT 720
 
 
+// SDL colors
+#define BLACK (SDL_Color){0,0,0}
+#define WHITE (SDL_Color){255,255,255}
+#define GOLD (SDL_Color){255,215,0}
 
 
 
@@ -86,7 +90,24 @@ typedef struct {
     //state
     int isHovered;
     int isPressed;
+    int isClicked;
 }Button;
+
+
+
+
+
+typedef struct
+{
+    // menu elements :
+    Button *buttonlist;
+    int b_ct;
+    Text *txtlist;
+
+    int txt_ct;
+    SDL_Surface *background;
+    int t_margine,b_margine;
+}Menu;
 
 
 
@@ -121,6 +142,7 @@ typedef struct {
 } Player;
 
 typedef struct {
+    SDL_Event event;
     char *title;
     int width;
     int height;
@@ -130,14 +152,18 @@ typedef struct {
     int quite;
     Player *player;
     TTF_Font *main_font;
+    TTF_Font *big_main_font;
 
 
-    // this is a matrix , rows are menus and cols are the buttons for each menu
-    Button **layout ;
 
-    // for the first menu :
-    Button *main_menu;
-    int bt_count;
+
+
+    // mouse and button stuff
+    int x_mouse,y_mouse,x_button_size,y_button_size,margin;
+    int released_mouse;
+
+
+
 
 
 
@@ -146,6 +172,23 @@ typedef struct {
     SDL_Surface *background;
     SDL_Surface *b_yellow;
     SDL_Surface *b_purple;
+
+
+
+    // the real deal ...
+    Menu *current_menu;
+
+
+
+
+
+
+
+
+
+
+
+
 }Game;
 
 

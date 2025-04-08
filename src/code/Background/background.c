@@ -22,3 +22,11 @@ void load_background(Game *game) {
 }
 
 
+
+
+void render_background(Game *game)
+{
+    SDL_BlitSurface(game->background,NULL,game->screen,NULL);
+}
+
+

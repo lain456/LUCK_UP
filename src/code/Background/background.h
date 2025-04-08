@@ -10,4 +10,6 @@
 
 void load_background(Game *game);
 
+void render_background(Game *game);
+
 #endif //BACKGROUND_H

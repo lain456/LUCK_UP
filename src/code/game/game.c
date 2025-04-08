@@ -8,6 +8,33 @@
 
 
 void Ini_Game(Game *game) {
+
+
+    if (SDL_Init(SDL_INIT_VIDEO | SDL_INIT_VIDEO | SDL_DOUBLEBUF )<0) {
+        printf("SDL_Init failed: %s\n", SDL_GetError());
+
+    }
+
+    if (TTF_Init()<0) {
+        printf("TTF_Init failed: %s\n", TTF_GetError());
+
+    }
+
+    if (Mix_OpenAudio(22050,MIX_DEFAULT_FORMAT,2,4096)<0) {
+        printf("Mix_OpenAudio failed: %s\n", Mix_GetError());
+
+    }
+
+
+    if (IMG_Init(IMG_INIT_PNG)<0) {
+        printf("IMG_Init failed: %s\n", IMG_GetError());
+
+    }
+
+    printf("game running..\n");
+
+
+
     game->height = HEIGHT;
     game->width = WIDTH;
     game->title = "LUCK UP";
@@ -15,6 +42,7 @@ void Ini_Game(Game *game) {
     game->quite = 0;
     game->screen = SDL_SetVideoMode(game->width,game->height,32,SDL_SWSURFACE | SDL_RESIZABLE);
     game->main_font = TTF_OpenFont(FREDOKA_PATH,28);
+    game->big_main_font = TTF_OpenFont(FREDOKA_PATH,45);
 
 
 

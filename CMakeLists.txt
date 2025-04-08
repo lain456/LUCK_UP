@@ -19,9 +19,13 @@ add_executable(LUCK_UP main.c
         src/code/Player/player.c
         src/code/Background/background.h
         src/code/Background/background.c
-        src/code/game/button.h
-        src/code/game/button.c
+        src/code/button/button.h
+        src/code/button/button.c
         src/code/enemy/enemy.h
-        src/code/enemy/enemy.c)
+        src/code/enemy/enemy.c
+        src/code/text/txt.h
+        src/code/text/txt.c
+        src/code/menu/menu.h
+        src/code/menu/menu.c)
 
 target_link_libraries(LUCK_UP ${SDL_LIBRARY} ${SDL_TTF_LIBRARY} ${SDL_IMAGE_LIBRARY} ${SDL_MIXER_LIBRARY} -lm)
