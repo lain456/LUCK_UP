@@ -83,6 +83,16 @@
  *-----------------------------------------------------------------------||-------------------------------------------------------------------------****
  *              Tue Apr 8 04:23:22 AM CET 2025                           ||                                                                         ****
  *                                                                                                                                                  ****
+ *                                                                                                                                                  ****
+ *                                                                                                                                                  ****
+ *                                                                                                                                                  ****
+ *                                                                                                                                                  ****
+ *                                                                                                                                                  ****
+ *                                                                                                                                                  ****
+ *                                                                                                                                                  ****
+ *                                                                                                                                                  ****
+ *                                                                                                                                                  ****
+ *                                                                                                                                                  ****
  *                                                                                                          -lain                                   ****
  *******************************************************************************************************************************************************
  -*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-****
@@ -106,7 +116,7 @@
  *                                              **********************************************************
  *
  */
-
+/*
 int test( ) {
     Game game;
     Ini_Game(&game);
@@ -152,7 +162,7 @@ int test( ) {
     SDL_Quit();
     return 0;
 }
-
+*/
 int test2(){
 
         // Initialize SDL
@@ -229,6 +239,153 @@ int test2(){
 }
 
 
+// menu test
+int test3()
+{
+    Game game;
+    Ini_Game(&game);
+    load_background(&game);
+    printf("testing ... \n");
+
+
+    M_node root_menu;
+
+    Menu play  ;
+    Menu cooked;
+
+    Init_Menu(&play);
+    Init_Menu(&cooked);
+
+
+
+    //custom play_menu
+    play.b_ct =6;
+    play.txt_ct = 3 ;
+    play.t_margine =10;
+    play.b_margine = 20;
+
+
+    // mem aloc
+    play.buttonlist = (Button*)malloc(sizeof(Button)*play.b_ct);
+    play.txtlist = (Text*)malloc(sizeof(Text)*play.txt_ct);
+
+
+
+
+    //Button names and txts
+    char *button_strings[] = {"play","options"," ","help","quit","lain"};
+    for (int i = 0; i < play.b_ct; i++)
+    {
+        play.buttonlist[i] = *create_button(&game,(WIDTH - game.x_button_size)/2,300 ,game.y_button_size,game.x_button_size,button_strings[i],WHITE,1);
+    }
+
+
+
+    y_order_buttons(play.buttonlist ,play.b_margine,play.b_ct);
+
+    //b_pos_update(&play.buttonlist[4],100 ,100);
+
+
+
+
+    play.txtlist[0] = *create_txt(" M A I N    G A M E ",game.big_main_font,BLACK,20,20);
+    play.txtlist[1] = *create_txt("prsented by lain",game.main_font,BLACK,play.txtlist[0].rect.x,play.txtlist[0].rect.y + play.txtlist[0].rect.h + play.t_margine);
+    play.txtlist[2] = *create_txt("game logo here",game.main_font,BLACK,game.width - 250 , game.height - 40 - play.t_margine);
+
+
+
+
+
+
+
+
+
+
+    game.current_menu = &play;
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+    //SDL_Event event;   // use the game event
+    while (!game.quite) {
+        SDL_GetMouseState(&game.x_mouse,&game.y_mouse);
+        game.released_mouse = 0;
+        while (SDL_PollEvent(&game.event)) {
+            if (game.event.type == SDL_QUIT) {
+                game.quite = 1;
+            }
+            if (game.event.type == SDL_MOUSEBUTTONUP)
+            {
+
+                printf("Mouse button released\n");
+                game.released_mouse = game.event.button.button;
+                game.event.button.button = 0;
+
+
+            }
+
+        }
+
+
+        update_buttons(&game,game.current_menu->buttonlist,game.current_menu->b_ct);
+
+
+
+
+
+
+
+        if (game.current_menu-> buttonlist[0].isClicked)
+        {
+            update_txt(&game.current_menu->buttonlist[0].txt,"P L A Y",GOLD,NULL);
+
+        }
+
+
+
+
+
+
+
+
+
+
+
+        render_background(&game);
+        SDL_BlitSurface(play.buttonlist[4].basic,NULL,game.screen,&play.buttonlist[4].b_rect);
+        //SDL_BlitSurface(play.buttonlist[3].basic,NULL,game.screen,&play.buttonlist[3].b_rect);
+
+        render_menu(&game,game.current_menu);
+
+
+
+        SDL_Flip(game.screen);
+    }
+
+
+
+
+    SDL_Quit();
+    return 0;
+
+}
+
+
 /*
  *
  *                                              **********************************************************
@@ -243,14 +400,13 @@ int test2(){
 
 
 
-int main(int argc, char *argv[])
-{
+int main(int argc, char *argv[]){
     // obv testing ....
     //return test();
-    //return test2();
+    return test3();
 
 
-
+    /*
 
 
 
@@ -333,9 +489,49 @@ int main(int argc, char *argv[])
 
 
 
-    for (int i = 0; i < game_menu->b_ct; i++) {
-        game_menu->buttonlist[i] = buttonlist[i];  // Copy the buttons
-    }
+
+
+
+
+    // the real deal...
+    M_node root_menu;
+    root_menu.parent =NULL;
+    root_menu.menu = (Menu *)malloc(sizeof(Menu));
+
+    root_menu.menu->b_ct = 5;
+    root_menu.menu->txt_ct = 3;
+    root_menu.menu->t_margine=10;
+
+    // mem allocation ...
+    root_menu.menu->txtlist = (Text *)malloc(sizeof(Text) * root_menu.menu->txt_ct);
+    root_menu.menu->buttonlist = (Button *)malloc(sizeof(Button) * root_menu.menu->b_ct);
+
+    // create txt
+    root_menu.menu->txtlist[0] = *create_txt(" M A I N    G A M E ",game.big_main_font,BLACK,20,20);
+    x_center_txt(&game,&root_menu.menu->txtlist[0]);
+    root_menu.menu->txtlist[1] = *create_txt("prsented by lain",game.main_font,BLACK,root_menu.menu->txtlist[0].rect.x,root_menu.menu->txtlist[0].rect.y + root_menu.menu->txtlist[0].rect.h + root_menu.menu->t_margine);
+    x_center_txt(&game,&root_menu.menu->txtlist[1]);
+    root_menu.menu->txtlist[2] = *create_txt("game logo here",game.main_font,BLACK,game.width - 250 , game.height - 40 - root_menu.menu->t_margine);
+
+    // create buttons
+    root_menu.menu->buttonlist[0] =buttonlist[0];
+    root_menu.menu->buttonlist[1] =buttonlist[1];
+    root_menu.menu->buttonlist[2] =buttonlist[2];
+    root_menu.menu->buttonlist[3] =buttonlist[3];
+    root_menu.menu->buttonlist[4] = *create_button(&game , 20 , HEIGHT - 300 , root_menu.menu->buttonlist[4].h,root_menu.menu->buttonlist[4].w,"L A i N",GOLD,1 );
+
+
+    // update menu
+    game.current_menu = root_menu.menu;
+
+
+
+
+
+
+
+
+
 
 
 
@@ -370,18 +566,18 @@ int main(int argc, char *argv[])
 
 
         // tryine to hover click test
-        update_buttons(&game,game_menu->buttonlist, 4);
+        update_buttons(&game,&game.current_menu->buttonlist, game.current_menu->b_ct);
 
 
         // action test
-        if (game_menu-> buttonlist[0].isClicked)
+        if (game.current_menu-> buttonlist[0].isClicked)
         {
-            update_txt(&game_menu->buttonlist[0].txt,"P L A Y",GOLD,NULL);
+            update_txt(&game.current_menu->buttonlist[0].txt,"P L A Y",GOLD,NULL);
 
         }
-        if (game_menu->buttonlist[3].isClicked)
+        if (game.current_menu->buttonlist[3].isClicked)
         {
-            update_txt(&game_menu->buttonlist[3].txt,"K Y S",WHITE,NULL);
+            update_txt(&game.current_menu->buttonlist[3].txt,"K Y S",WHITE,NULL);
 
         }
 
@@ -393,7 +589,7 @@ int main(int argc, char *argv[])
 
 
         render_background(&game);
-        render_menu(&game,game_menu);
+        render_menu(&game,game.current_menu);
 
 
 
@@ -431,6 +627,11 @@ int main(int argc, char *argv[])
 
     printf("%s",buttonlist[0].txt.writen);
     return 0;
+
+
+
+
+    */
 }
 
 

@@ -13,13 +13,13 @@
 #include"../Background/background.h"
 
 
-
+void Init_Menu(Menu *menu);
 
 
 void render_menu(Game *game,Menu *menu);
 
 
-
+M_node *M_link_Node(Menu* menu,M_node *parent);
 
 
 

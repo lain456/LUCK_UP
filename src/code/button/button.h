@@ -44,5 +44,12 @@ int button_is_clicked(Game *game, Button *button);
 
 
 
+void x_order_buttons(Button *button,int margin , int b_ct);
+
+void y_order_buttons(Button *button,int margin , int b_ct);
+
+void b_pos_update(Button *button,int new_x,int new_y);
+
+
 
 #endif //BUTTON_H

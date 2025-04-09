@@ -41,8 +41,12 @@ void Ini_Game(Game *game) {
     game->state = 1;
     game->quite = 0;
     game->screen = SDL_SetVideoMode(game->width,game->height,32,SDL_SWSURFACE | SDL_RESIZABLE);
+
     game->main_font = TTF_OpenFont(FREDOKA_PATH,28);
+    game->big_main_font = TTF_OpenFont(FREDOKA_PATH,30);
     game->big_main_font = TTF_OpenFont(FREDOKA_PATH,45);
+    game->x_button_size = 200;
+    game->y_button_size = 100;
 
 
 
@@ -52,5 +56,18 @@ void Ini_Game(Game *game) {
     game->b_yellow = IMG_Load(BUTTON_PNG2_PATH );
 
 
+    game->current_menu = NULL;
+
+
 
 }
+
+
+
+
+
+
+
+
+
+

@@ -33,6 +33,10 @@
 
 
 
+
+
+
+
 //paths used :
 //basic config
 #define BACK_PNG_PATH "../src/assets/grphics/basic/back.png"
@@ -75,6 +79,7 @@ typedef struct {
 
 
 typedef struct {
+
     int h,w,x,y,x_center,y_center,type;
     //prototype
     SDL_Rect b_rect;
@@ -111,6 +116,21 @@ typedef struct
 
 
 
+// creating nodes for our tree
+
+
+
+
+typedef struct M_node
+{
+    struct M_node *parent;
+    Menu *menu;
+    // child_list size is included in the Menu->b_ct  AKA number of buttons
+    struct M_node *child_list;
+}M_node;
+
+
+
 
 
 
@@ -143,15 +163,27 @@ typedef struct {
 
 typedef struct {
     SDL_Event event;
+
+
+
+
     char *title;
     int width;
     int height;
+
+
+
     SDL_Surface *screen;
+
+
+
+
     int fullscreen;
     int state;
     int quite;
     Player *player;
     TTF_Font *main_font;
+    TTF_Font * mid_font;
     TTF_Font *big_main_font;
 
 
@@ -177,16 +209,6 @@ typedef struct {
 
     // the real deal ...
     Menu *current_menu;
-
-
-
-
-
-
-
-
-
-
 
 
 }Game;

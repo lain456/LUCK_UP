@@ -10,6 +10,8 @@
 
 
 // this function assing names to each button -lain
+
+// W I P
 /*
 Button *create_buttons( char *text_list[],int size) {
     // init array of buttons
@@ -38,6 +40,7 @@ Button *create_buttons( char *text_list[],int size) {
 
 int is_hovered(Game *game, SDL_Rect *rect)
 {
+
     if (rect->x + rect->w>game->x_mouse && game->x_mouse>rect->x && rect->y + rect->h > game->y_mouse && game->y_mouse > rect->y)
     {
         return  1;
@@ -177,7 +180,7 @@ Button *create_button(Game *game ,int x,int y,int h,int w ,char* text ,SDL_Color
 
 
     // basic surf..
-    button->basic = create_color_surface(button->b_rect.w , button->b_rect.h ,100,100,100 );
+    button->basic = create_color_surface(button->b_rect.w , button->b_rect.h ,255,0,0 );
 
 
 
@@ -188,7 +191,7 @@ Button *create_button(Game *game ,int x,int y,int h,int w ,char* text ,SDL_Color
 
 
    button->txt.surf = TTF_RenderText_Blended(game->main_font,button->txt.writen,button->txt.color);
-   printf("%s \n",button->txt.writen);
+   //printf("%s \n",button->txt.writen);
 
 
    // button->txt.rect = (SDL_Rect){0, 0, button->txt.surf->w, button->txt.surf->h};
@@ -238,12 +241,74 @@ Button *create_button(Game *game ,int x,int y,int h,int w ,char* text ,SDL_Color
 
 
 
+
+
+
 void render_buttons(Game *game, Button button[],int b_cnt ){
   // just render them dude
   for (int i=0;i<b_cnt;i++){
     render_button(game,&button[i],1);
    }
  }
+
+void b_pos_update(Button *button,int new_x,int new_y)
+{
+    int g_b_x, g_b_y; // rect / b_rect relation
+    int t_b_x, t_b_y; // b_rect / txt.rect relation
+
+    int x_change =  new_x - button->b_rect.x;
+    int y_change = new_y - button->b_rect.y;
+
+
+
+
+
+    t_b_x = button->txt.rect.x - button->b_rect.x;
+    t_b_y = button->txt.rect.y - button->b_rect.y;
+
+
+    button->b_rect.x += x_change;
+    button->b_rect.y += y_change;
+
+
+    button->rect.x += x_change ;
+    button->rect.y += y_change;
+
+
+    button->txt.rect.x += x_change;
+    button->txt.rect.y += y_change;
+
+
+
+}
+
+
+void y_order_buttons(Button *button,int margin , int b_ct)
+{
+    for(int i=1;i<b_ct;i++)
+    {
+        printf(" ordering ...%s \n",button[i].txt.writen);
+        button[i].txt.rect.y =  button[i-1].txt.rect.y + button[i-1].b_rect.h + margin;
+        button[i].b_rect.y = button[i-1].b_rect.y + button[i-1].b_rect.h + margin;
+        button[i].rect.y = button[i-1].rect.y + button[i-1].b_rect.h + margin;
+    }
+
+}
+
+
+
+void x_order_buttons(Button *button,int margin , int b_ct)
+{
+    for(int i=1;i<b_ct;i++)
+    {
+        button[i].txt.rect.x = button[i-1].txt.rect.x + button[i-1].b_rect.w + margin;
+        button[i].b_rect.x = button[i-1].b_rect.x + button[i-1].b_rect.w + margin;
+        button[i].rect.x = button[i-1].rect.x + button[i-1].b_rect.w + margin;
+    }
+}
+
+
+
 
 
 
