@@ -42,6 +42,7 @@ void Ini_Game(Game *game) {
     game->quite = 0;
     game->screen = SDL_SetVideoMode(game->width,game->height,32,SDL_SWSURFACE | SDL_RESIZABLE);
 
+    game->mini_font = TTF_OpenFont(FREDOKA_PATH,20);
     game->main_font = TTF_OpenFont(FREDOKA_PATH,28);
     game->big_main_font = TTF_OpenFont(FREDOKA_PATH,30);
     game->big_main_font = TTF_OpenFont(FREDOKA_PATH,45);

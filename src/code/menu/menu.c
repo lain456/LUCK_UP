@@ -23,6 +23,14 @@ void render_menu(Game *game,Menu *menu)
  // just show all buttons and texts if exist ,
 
 
+
+if (menu->background)
+{
+ //printf("there is a bg");
+ SDL_BlitSurface(menu->background,NULL,game->screen,NULL);
+}
+
+
  if (menu->buttonlist)
  {
   render_buttons(game,menu->buttonlist,menu->b_ct);
@@ -38,14 +46,12 @@ void render_menu(Game *game,Menu *menu)
  {
   printf("error : txtlist is null");
  }
-
-
-
-
-
-
-
 }
+
+
+
+
+
 
 
 
@@ -64,14 +70,34 @@ M_node *M_link_Node(Menu* menu,M_node *parent)
  node->parent = parent;
  node->menu = menu;
 
- // if it has only one button it would prob be named "okay" and it would takes you back to the parrent node , so no sub menus for that..    -lain
- if (menu->b_ct <=1)
- {
-  node->child_list = NULL;
- }else
- {
+ // if it has only one button it would prob be named "okay" and it would take you back to the parrent node , so no sub menus for that..    -lain
+
   node->child_list =(M_node*)malloc(sizeof(M_node*)*menu->b_ct);
- }
+
 
 
 }
+
+
+void node_Init(M_node *node,Menu *menu , int id)
+{
+ node->child_list = (M_node*)malloc(sizeof(M_node*)*menu->b_ct);
+ node->menu =menu;
+ node->id = id;
+ node->parent = NULL;
+};
+
+
+
+
+
+void  create_main_menu(Menu *menu ,char *name_list[] , int b_x,int b_y , Text *text_list)
+{
+
+}
+
+
+
+
+
+

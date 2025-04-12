@@ -26,6 +26,8 @@ add_executable(LUCK_UP main.c
         src/code/text/txt.h
         src/code/text/txt.c
         src/code/menu/menu.h
-        src/code/menu/menu.c)
+        src/code/menu/menu.c
+        src/code/load_menus/load_menus.c
+        src/code/load_menus/load_menus.h)
 
 target_link_libraries(LUCK_UP ${SDL_LIBRARY} ${SDL_TTF_LIBRARY} ${SDL_IMAGE_LIBRARY} ${SDL_MIXER_LIBRARY} -lm)

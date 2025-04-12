@@ -42,7 +42,6 @@ SDL_Surface *create_color_surface(int w , int h , Uint8 r, Uint8 g, Uint8 b ) {
     SDL_Surface *surface = SDL_CreateRGBSurface(SDL_SWSURFACE, w,h, 32, 0, 0, 0, 0);
     SDL_FillRect(surface, NULL, SDL_MapRGB(surface->format, r, g, b));
     return surface;
-
 }
 
 
@@ -79,4 +78,43 @@ SDL_Surface *create_blank_surface(int w, int h) {
 
 
 
-// change rect1  to center inside rect2
+
+void toggle_fullscreen(Game *game) {
+    Uint32 flags = SDL_SWSURFACE; // Base flags (software surface)
+
+    // Toggle the fullscreen state
+    game->fullscreen = !game->fullscreen;
+
+    // Add SDL_FULLSCREEN flag if enabling fullscreen
+    if (game->fullscreen) {
+        flags |= SDL_FULLSCREEN;
+    }
+
+    // Recreate the display surface with new flags
+    SDL_Surface *new_screen = SDL_SetVideoMode(game->width, game->height, 32, flags);
+
+    // Check if the mode change was successful
+    if (new_screen == NULL) {
+        printf("Failed to set video mode: %s\n", SDL_GetError());
+        game->fullscreen = !game->fullscreen; // Revert flag on failure
+        return;
+    }
+
+    // Update the game's screen surface
+    game->screen = new_screen;
+
+
+    if (!game->fullscreen) {
+        SDL_WM_GrabInput(SDL_GRAB_OFF);
+    } else {
+        // Optionally disable grab in fullscreen for menu navigation
+        SDL_WM_GrabInput(SDL_GRAB_OFF); // Change to SDL_GRAB_ON if needed for gameplay
+    }
+
+
+
+
+
+
+    SDL_Flip(game->screen);
+}

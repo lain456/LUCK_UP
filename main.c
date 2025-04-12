@@ -16,6 +16,11 @@
 
 
 
+
+#include "src/code/load_menus/load_menus.h"
+
+
+
 /*
  *to do list  :
  *
@@ -45,9 +50,9 @@
  *------create a menu                                                                                                   done!                       ****
  *------render menu                                                                                                     done!                       ****
  *------menu handling                                                                                               done ig ?                       ****
- *------travel between menus                                                                                        WIP...                          ****
- *------create a tree like data structure where each node can point to a menu (menu mapping ) THIS IS HARD !!                                       ****
- *-------handle button actions using a current button list                                                           done ig ?                      ****
+ *------travel between menus                                                                                        done  !                         ****
+ *------create a tree like data structure where each node can point to a menu (menu mapping ) THIS IS HARD !!            done !                     ****
+ *-------handle button actions using a current button list                                                               done!                      ****
  *                                                                                                                                                  ****
  *                                                                                                                                                  ****
  -*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-****
@@ -393,17 +398,505 @@ int test3()
  *                                              **********************************************************
  *
  */
+int test4()
+{
+    Game game;
+    Ini_Game(&game);
+    load_background(&game);
+    printf("testing ... \n");
+
+
+    M_node node_menu;
+    Menu menu = options_menu(game);
+    node_menu.menu = &menu;
+    game.current_node = &node_menu;
 
 
 
 
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+    //SDL_Event event;   // use the game event
+    while (!game.quite) {
+        SDL_GetMouseState(&game.x_mouse,&game.y_mouse);
+        game.released_mouse = 0;
+        while (SDL_PollEvent(&game.event)) {
+            if (game.event.type == SDL_QUIT) {
+                game.quite = 1;
+            }
+            if (game.event.type == SDL_MOUSEBUTTONUP)
+            {
+
+                printf("Mouse button released\n");
+                game.released_mouse = game.event.button.button;
+                game.event.button.button = 0;
+
+
+            }
+
+        }
+
+
+        update_buttons(&game,game.current_node->menu->buttonlist,game.current_node->menu->b_ct);
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+        //render_background(&game);
+
+
+        render_menu(&game,game.current_node->menu);
+
+
+
+        SDL_Flip(game.screen);
+    }
+
+
+
+
+    SDL_Quit();
+
+
+
+
+
+    return 0;
+}
+
+
+/*  nodes be like :
+ *
+ *
+ *
+ *
+ *                              |->
+ *                              |->n2
+ ********************* n0 -> n1 |->n
+ *                              |->n0
+ *
+ *
+ *
+ *
+ *
+ *
+ */
 
 
 
 int main(int argc, char *argv[]){
     // obv testing ....
     //return test();
-    return test3();
+    //return test3();
+    //return test4();
+
+
+    printf("pizza = %d\n",pizza());
+    Game game;
+    Ini_Game(&game);
+    load_background(&game);
+    printf("testing ... \n");
+
+
+    M_node n;
+    M_node n1;
+    M_node n0;
+    M_node n2;
+    game.current_node = &n1;
+
+    Menu play = play_menu(game); ;
+    Menu exit = exit_menu(game);
+    Menu options = options_menu(game);
+    Menu GET_YO_SORRY_ASS_TO_WORK = WIP_menu(game);
+    node_Init(&n0,&exit,0 );
+    node_Init(&n1,&play,1);
+    node_Init(&n2,&options,2);
+    node_Init(&n,&GET_YO_SORRY_ASS_TO_WORK,3);
+
+    printf("%p\n",n0.parent);
+
+    //n1.parent = &n0;
+
+
+
+
+
+    //node_Init(&exit,play_menu(game));
+
+    // WIP exit
+
+
+
+    //cooked = exit_menu(game);
+
+
+   // main_menu.parent = &exit;
+
+
+
+
+    game.current_menu = n1.menu;
+
+    //SDL_Event event;   // use the game event
+    while (!game.quite) {
+        SDL_GetMouseState(&game.x_mouse,&game.y_mouse);
+        game.released_mouse = 0;
+        while (SDL_PollEvent(&game.event)) {
+            if (game.event.type == SDL_QUIT) {
+                game.quite = 1;
+            }
+            if (game.event.type == SDL_MOUSEBUTTONUP)
+            {
+
+                printf("Mouse button released\n");
+                game.released_mouse = game.event.button.button;
+                game.event.button.button = 0;
+
+
+            }
+
+
+
+
+        }
+
+
+
+        update_buttons(&game,game.current_node->menu->buttonlist,game.current_node->menu->b_ct);
+
+
+
+        switch (game.current_node->id)
+        {
+
+
+        case 0 :
+            {
+                if (game.current_node->menu-> buttonlist[0].isClicked )
+                {
+                    game.current_node = &n1;
+
+                }
+
+
+                if (game.current_node->menu-> buttonlist[1].isClicked )
+                {
+                    game.quite = 1;
+                }
+
+
+                break;
+            }
+            case 1:
+                {
+
+
+
+
+                    if (game.current_node->menu-> buttonlist[0].isClicked )
+                    {
+                        update_txt(&game.current_node->menu->buttonlist[0].txt,"P L A Y",GOLD,NULL);
+                        printf("we are about to play\n");
+                        break;
+
+                    }
+
+
+                    // options
+                    if (game.current_node->menu-> buttonlist[1].isClicked ){
+                        game.current_node = &n2;
+                        break; // big fix
+                    }
+
+
+                    // HELP
+
+                    if (game.current_node->menu-> buttonlist[2].isClicked ){
+                        game.current_node = &n;
+                        break;
+                    }
+
+
+
+
+
+                    if (game.current_node->menu-> buttonlist[3].isClicked ){
+                        game.current_node = &n0;
+                    }
+
+
+
+
+                    break;
+                }
+
+            case 2:
+            {
+
+                if (game.current_node->menu-> buttonlist[0].isClicked )
+                {
+                    update_txt(&game.current_node->menu->txtlist[0] ,"yeah that button doesn't work...",BLACK,game.main_font);
+                }
+                if (game.current_node->menu-> buttonlist[1].isClicked )
+                {
+                    toggle_fullscreen(&game) ;
+                }
+                if (game.current_node->menu-> buttonlist[2].isClicked )
+                {
+                    update_txt(&game.current_node->menu->txtlist[0] ," W I P ig....",BLACK,game.big_main_font);
+                    game.current_node = &n1;
+                }
+
+                break;
+            }
+
+            case 3:
+            {
+                if (game.current_node->menu-> buttonlist[0].isClicked )
+                {
+                    game.current_node = &n1;
+                }
+                break;
+            }
+
+
+
+
+
+            default:
+                printf("get out ");
+            break;
+
+
+
+
+
+        }
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+        /*
+        printf("%d\n",game.current_node->id);
+
+
+        if (game.current_node->menu-> buttonlist[0].isClicked )
+        {
+            update_txt(&game.current_node->menu->buttonlist[0].txt,"P L A Y",GOLD,NULL);
+
+        }
+
+
+        if (game.current_node->menu-> buttonlist[game.current_node->menu->b_ct - 1].isClicked)
+        {
+            //game.quite = 1;
+            //printf("par : %s\n",game.current_node->parent->name);
+            game.current_node = game.current_node->parent;
+        }
+        */
+
+
+
+
+
+
+
+
+
+
+        render_background(&game);
+
+
+        render_menu(&game,game.current_node->menu);
+
+
+
+        SDL_Flip(game.screen);
+    }
+
+
+
+
+    SDL_Quit();
+    return 0;
+
+}
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
 
 
     /*
@@ -628,11 +1121,11 @@ int main(int argc, char *argv[]){
     printf("%s",buttonlist[0].txt.writen);
     return 0;
 
-
+}
 
 
     */
-}
+
 
 
 

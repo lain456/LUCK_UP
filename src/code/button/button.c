@@ -12,27 +12,45 @@
 // this function assing names to each button -lain
 
 // W I P
-/*
-Button *create_buttons( char *text_list[],int size) {
-    // init array of buttons
-    Button *button = (Button *)malloc(sizeof(Button)*size);
+Button *create_buttons( Game *game , char *text_list[],int b_x,int b_y,SDL_Color color ,int margin ,int type)
+{
+    Button *buttons;
+    int txt_ct =0;
 
-    for(int i=0;i<size;i++) {
-        button[i].txt.writen = text_list[i];
-        button[i].not_hovered = IMG_Load( BACK_PNG_PATH);
-        button[i].hovered = IMG_Load( BUTTON_PNG2_PATH);
-        button[i].isHovered = 0;
-        button[i].isPressed = 0;
 
-        // postion the buttons
+    while (text_list[txt_ct] != NULL) {
+        txt_ct++;
+    }
+    buttons = (Button*) malloc(sizeof(Button)*txt_ct);
 
+    for (int i = 0; i < txt_ct; i++)
+    {
+     buttons[i] = *create_button(game,b_x+i,b_y +i ,game->y_button_size,game->x_button_size,text_list[i],color,1);
 
     }
 
-   // game->main_menu = button;
-}
+    switch (type)
+    {
+        case 1: y_order_buttons(&buttons,margin,txt_ct);
+            break;
+        case 2:
+            x_order_buttons(&buttons,margin,txt_ct);
+            break;
+        default:
+            printf("Wrong type\n");
+            break;
 
-*/
+    }
+
+
+
+
+    printf("txt_ct = %d \n",txt_ct);
+
+
+    return buttons;
+
+}
 
 
 
@@ -167,10 +185,12 @@ Button *create_button(Game *game ,int x,int y,int h,int w ,char* text ,SDL_Color
     // figure out b_rect
     switch (type) {
         case 1: {
-            button->b_rect.x = x + (w/22);
-            button->b_rect.y = y + (h/2.9);
-            button->b_rect.w = button->w  -(w/15) ;
-            button->b_rect.h = button->h - (h*2/3);
+                // this was reworked Thu Apr 10 05:55:53 PM CET 2025 -lain
+
+            button->b_rect.x = x + (w/18);
+            button->b_rect.y = y + (h*1/4);
+            button->b_rect.w = button->w  -(w/8) ;
+            button->b_rect.h = button->h  - (h*23/48);
 
         }break;
 
@@ -194,9 +214,18 @@ Button *create_button(Game *game ,int x,int y,int h,int w ,char* text ,SDL_Color
    //printf("%s \n",button->txt.writen);
 
 
-   // button->txt.rect = (SDL_Rect){0, 0, button->txt.surf->w, button->txt.surf->h};
+    button->txt.rect = (SDL_Rect){0, 0, button->txt.surf->w, button->txt.surf->h};
+/*
+    printf("%s b_rect.x : %d \n",button->txt.writen,button->b_rect.x);
+    printf("%s b_rect.y : %d \n",button->txt.writen,button->b_rect.y);
 
 
+    printf("%s b_rect.w : %d \n",button->txt.writen,button->b_rect.w);
+    printf("%s b_rect.h : %d \n",button->txt.writen,button->b_rect.h);
+
+    printf( "%s w : %d\n",button->txt.writen,button->txt.surf->w);
+    printf( "%s h : %d\n",button->txt.writen,button->txt.surf->h);
+*/
     button->txt.rect = (SDL_Rect){
         button->b_rect.x + ( button->b_rect.w - button->txt.surf->w)/2,
         button->b_rect.y + ( button->b_rect.h - button->txt.surf->h)/2,
@@ -204,8 +233,14 @@ Button *create_button(Game *game ,int x,int y,int h,int w ,char* text ,SDL_Color
            button->txt.surf->h,
 
     };
+/*
 
+    printf("%s txt.rect.x = %d\n",button->txt.writen,button->txt.rect.x);
+    printf("%s txt.rect.y = %d\n",button->txt.writen,button->txt.rect.y);
+    printf("%s txt.rect.w = %d\n",button->txt.writen,button->txt.rect.w);
+    printf("%s txt.rect.h = %d\n",button->txt.writen,button->txt.rect.h);
 
+*/
 
 
 
@@ -283,27 +318,28 @@ void b_pos_update(Button *button,int new_x,int new_y)
 }
 
 
-void y_order_buttons(Button *button,int margin , int b_ct)
+void y_order_buttons(Button *button, int margin, int b_ct)
 {
-    for(int i=1;i<b_ct;i++)
+    for(int i = 1; i < b_ct; i++)
     {
-        printf(" ordering ...%s \n",button[i].txt.writen);
-        button[i].txt.rect.y =  button[i-1].txt.rect.y + button[i-1].b_rect.h + margin;
         button[i].b_rect.y = button[i-1].b_rect.y + button[i-1].b_rect.h + margin;
-        button[i].rect.y = button[i-1].rect.y + button[i-1].b_rect.h + margin;
+        button[i].txt.rect.y = button[i].b_rect.y + (button[i].b_rect.h - button[i].txt.surf->h)/2;
+        button[i].rect.y = button[i].b_rect.y + (button[i].b_rect.h - button[i].rect.h)/2;
     }
-
 }
 
-
+// order functions fixed , now the resulting txt is also centered
 
 void x_order_buttons(Button *button,int margin , int b_ct)
 {
     for(int i=1;i<b_ct;i++)
     {
-        button[i].txt.rect.x = button[i-1].txt.rect.x + button[i-1].b_rect.w + margin;
         button[i].b_rect.x = button[i-1].b_rect.x + button[i-1].b_rect.w + margin;
-        button[i].rect.x = button[i-1].rect.x + button[i-1].b_rect.w + margin;
+
+
+        button[i].txt.rect.x = button[i].b_rect.x + ( button[i].b_rect.w - button[i].txt.surf->w)/2   ;
+
+        button[i].rect.x = button[i].b_rect.x + (button[i].b_rect.w - button[i].rect.w) /2   ;
     }
 }
 

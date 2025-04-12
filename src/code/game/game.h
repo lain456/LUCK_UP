@@ -40,8 +40,8 @@
 //paths used :
 //basic config
 #define BACK_PNG_PATH "../src/assets/grphics/basic/back.png"
-#define BUTTON_PNG_PATH "../src/assets/grphics/basic/button.png"
-#define BUTTON_PNG2_PATH "../src/assets/grphics/basic/button_2.png"
+#define BUTTON_PNG_PATH "../src/assets/grphics/menu/white.png"
+#define BUTTON_PNG2_PATH "../src/assets/grphics/menu/yellow.png"
 //************************************************************************************//
 //bird config
 #define BIRD_R01_PATH "../src/assets/grphics/characters/bird/flying to the right/b0.png"
@@ -58,7 +58,8 @@
 #define FREDOKA_PATH "../src/assets/font/fredoka-one.one-regular.ttf"
 //************************************************************************************//
 
-
+#define LOGO_PATH "../src/assets/grphics/menu/main_logo.png"
+#define LOGO2_PATH "../src/assets/grphics/menu/txt_logo.png"
 
 
 // gameplay :
@@ -100,6 +101,24 @@ typedef struct {
 
 
 
+typedef struct
+{
+    // to be developed
+    SDL_Surface *bg;
+    SDL_Surface *fill;
+    Button button;
+    SDL_Rect rect; // for the bg
+    SDL_Rect s_rect;  // for the fill
+
+
+
+
+
+
+
+
+
+} Slider;
 
 
 typedef struct
@@ -112,6 +131,9 @@ typedef struct
     int txt_ct;
     SDL_Surface *background;
     int t_margine,b_margine;
+
+
+    Slider *slider_list;
 }Menu;
 
 
@@ -125,6 +147,7 @@ typedef struct M_node
 {
     struct M_node *parent;
     Menu *menu;
+    int id;
     // child_list size is included in the Menu->b_ct  AKA number of buttons
     struct M_node *child_list;
 }M_node;
@@ -161,6 +184,21 @@ typedef struct {
 
 } Player;
 
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
 typedef struct {
     SDL_Event event;
 
@@ -177,11 +215,12 @@ typedef struct {
 
 
 
-
+    int music_volume;
     int fullscreen;
     int state;
     int quite;
     Player *player;
+    TTF_Font *mini_font;
     TTF_Font *main_font;
     TTF_Font * mid_font;
     TTF_Font *big_main_font;
@@ -202,16 +241,26 @@ typedef struct {
     //often used suf will be here :
     // background
     SDL_Surface *background;
+
+
+
     SDL_Surface *b_yellow;
     SDL_Surface *b_purple;
+    SDL_Surface *logo;
 
 
 
     // the real deal ...
     Menu *current_menu;
+    M_node *current_node;
 
 
 }Game;
+
+
+
+
+
 
 
 void Ini_Game(Game *game);

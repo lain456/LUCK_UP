@@ -11,7 +11,7 @@
 
 
 
-Button *create_buttons( char *text_list[],int size);
+Button *create_buttons(Game *game ,char *text_list[],int b_x,int b_y,SDL_Color color,int margin ,int type);
 
 void render_buttons(Game *game, Button button[],int b_cnt ) ;
 
@@ -49,6 +49,12 @@ void x_order_buttons(Button *button,int margin , int b_ct);
 void y_order_buttons(Button *button,int margin , int b_ct);
 
 void b_pos_update(Button *button,int new_x,int new_y);
+
+
+
+
+
+
 
 
 

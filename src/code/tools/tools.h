@@ -21,5 +21,8 @@ SDL_Surface *create_blank_surface(int w, int h);
 SDL_Surface *create_centered_label(SDL_Rect targetRect, TTF_Font *font, const char *text, SDL_Color color);
 
 
+void toggle_fullscreen(Game *game) ;
+
+
 #endif //TOOLS_H
 
