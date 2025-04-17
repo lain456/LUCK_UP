@@ -62,6 +62,9 @@
 #define LOGO2_PATH "../src/assets/grphics/menu/txt_logo.png"
 
 
+#define MUSIC_PATH "../src/assets/audio/Azure - maybe in another life.mp3"
+
+
 // gameplay :
 #define SQUARE_SIZE 50
 #define MOVE_SPEED 5
@@ -94,6 +97,7 @@ typedef struct {
     Text txt;
 
     //state
+    int b_switch;
     int isHovered;
     int isPressed;
     int isClicked;
@@ -105,10 +109,23 @@ typedef struct
 {
     // to be developed
     SDL_Surface *bg;
+    SDL_Color color;
     SDL_Surface *fill;
-    Button button;
+    Button *button;
     SDL_Rect rect; // for the bg
     SDL_Rect s_rect;  // for the fill
+    int val; // % ratio
+
+    // button
+    SDL_Surface *b;
+    SDL_Surface *bh;
+    int b_size;
+    //SDL_Surface b_hovered;
+    SDL_Rect b_rect;
+    int is_clicked;
+    int is_hovered;
+    SDL_Color b_color;
+    int x_dif;
 
 
 
@@ -134,6 +151,7 @@ typedef struct
 
 
     Slider *slider_list;
+    int s_ct,s_margine;
 }Menu;
 
 
@@ -171,6 +189,10 @@ typedef struct {
     int level; // Add level attribute
     // direction
     int move;
+
+
+
+    int moveLeft,moveRight,moveUp,moveDown;
 
     // animation spritsheet WIP
     SDL_Surface *surface;
@@ -232,6 +254,21 @@ typedef struct {
     // mouse and button stuff
     int x_mouse,y_mouse,x_button_size,y_button_size,margin;
     int released_mouse;
+    int mouse_pressed;
+    SDL_Surface *b_yellow;
+    SDL_Surface *b_purple;
+
+
+
+
+
+
+
+    //slider stuff
+    int x_slider_size,y_slider_size;
+    SDL_Color slider_fill_color;
+    SDL_Color slider_bg_color;
+    SDL_Surface *slider_bg , *slider_fill  , *b_slider;
 
 
 
@@ -244,8 +281,7 @@ typedef struct {
 
 
 
-    SDL_Surface *b_yellow;
-    SDL_Surface *b_purple;
+
     SDL_Surface *logo;
 
 

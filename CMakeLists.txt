@@ -3,14 +3,25 @@ project(LUCK_UP C)
 
 set(CMAKE_C_STANDARD 11)
 
+# Find SDL and related libraries
 find_package(SDL REQUIRED)
 find_package(SDL_ttf REQUIRED)
 find_package(SDL_image REQUIRED)
 find_package(SDL_mixer REQUIRED)
 
-include_directories(${SDL_INCLUDE_DIR} ${SDL_TTF_INCLUDE_DIR} ${SDL_IMAGE_INCLUDE_DIR} ${SDL_MIXER_INCLUDE_DIR})
+# Include directories for SDL and gameplay headers
+include_directories(
+        ${SDL_INCLUDE_DIR}
+        ${SDL_TTF_INCLUDE_DIR}
+        ${SDL_IMAGE_INCLUDE_DIR}
+        ${SDL_MIXER_INCLUDE_DIR}
+        ${CMAKE_SOURCE_DIR}/gameplay/include
+        ${CMAKE_SOURCE_DIR}/src/code
+)
 
-add_executable(LUCK_UP main.c
+# Add executable with all necessary source files
+add_executable(LUCK_UP
+        COOKED.c
         src/code/game/game.h
         src/code/game/game.c
         src/code/tools/tools.h
@@ -28,6 +39,22 @@ add_executable(LUCK_UP main.c
         src/code/menu/menu.h
         src/code/menu/menu.c
         src/code/load_menus/load_menus.c
-        src/code/load_menus/load_menus.h)
+        src/code/load_menus/load_menus.h
+        src/code/slider/slider.h
+        src/code/slider/slider.c
+        gameplay/src/bullet.c
+        gameplay/src/collision.c
+        gameplay/src/enemy.c
+        #gameplay/src/player.c
+        gameplay/src/utils.c
+        src/code/slider/slider.c
+)
 
-target_link_libraries(LUCK_UP ${SDL_LIBRARY} ${SDL_TTF_LIBRARY} ${SDL_IMAGE_LIBRARY} ${SDL_MIXER_LIBRARY} -lm)
+# Link libraries
+target_link_libraries(LUCK_UP
+        ${SDL_LIBRARY}
+        ${SDL_TTF_LIBRARY}
+        ${SDL_IMAGE_LIBRARY}
+        ${SDL_MIXER_LIBRARY}
+        -lm
+)

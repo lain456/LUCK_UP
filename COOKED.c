@@ -18,6 +18,35 @@
 
 
 #include "src/code/load_menus/load_menus.h"
+#include "src/code/slider/slider.h"
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+//gameplay
+#include <SDL/SDL.h>
+#include <SDL/SDL_ttf.h>
+#include <math.h>
+#include"gameplay/include/game.h"
+//#include "gameplay/include/player.h"
+#include "gameplay/include/bullet.h"
+#include "gameplay/include/enemy.h"
+#include "gameplay/include/utils.h"
 
 
 
@@ -62,10 +91,10 @@
  *-                                                                                                                                                 ****
  *-             * options menu  :                                                                                                                   ****
  *                      |>higher and lower volume (slider optional )                                                                                ****
- *                      |>fullscreen on and off , choose resolution (change game status )                                                           ****
- *                      |>other functionalities like an info button cuz why not....                                                                 ****
- *              * hitting escape at any point will take you back one menu back ....                                                                 ****
- *              * emulate menu branching                                                                                                            ****
+ *                      |>fullscreen on and off , choose resolution (change game status )                    done !                                 ****
+ *                      |>other functionalities like an info button cuz why not....                                     done ig.....                ****
+ *              * hitting escape at any point will take you back one menu back ....                             !!!!!!!                             ****
+ *              * emulate menu branching                                                                  almost done...                            ****
  *              * init menu - it takes &game and create everything from the start                                                                   ****
  *                                                                                                                                                  ****
  *                                                                                                                                                  ****
@@ -379,6 +408,7 @@ int test3()
 
 
 
+
         SDL_Flip(game.screen);
     }
 
@@ -391,36 +421,34 @@ int test3()
 }
 
 
-/*
- *
- *                                              **********************************************************
- *                                              * * *       E N D         O F        F I E L D       * * *
- *                                              **********************************************************
- *
- */
+// slider test
 int test4()
 {
+    //printf("pizza = %d\n",pizza());
+
     Game game;
     Ini_Game(&game);
     load_background(&game);
     printf("testing ... \n");
 
 
-    M_node node_menu;
-    Menu menu = options_menu(game);
-    node_menu.menu = &menu;
-    game.current_node = &node_menu;
+    M_node n,n0,n1,n2;
+    //create menus
+    Menu play = play_menu(game) ,exit = exit_menu(game) ,options = options_menu(game) ,GET_YO_SORRY_ASS_TO_WORK = WIP_menu(game);
+    // link menus to nodes
+
+    node_Init(&n1,&play,1);  node_Init(&n0,&exit,0 );  node_Init(&n2,&options,2);  node_Init(&n,&GET_YO_SORRY_ASS_TO_WORK,3);
 
 
 
 
 
+    game.current_node = &n2;
 
 
-
-
-
-
+    // trying out sliders
+//Slider s = *create_slider(&game,(SDL_Rect){(WIDTH-game.x_slider_size) *3/4,(HEIGHT -game.y_slider_size)*1/3 ,game.x_slider_size,game.y_slider_size,});
+//printf("s = %d",s.val);
 
 
 
@@ -432,151 +460,20 @@ int test4()
     while (!game.quite) {
         SDL_GetMouseState(&game.x_mouse,&game.y_mouse);
         game.released_mouse = 0;
+        //game.mouse_pressed = 0;
         while (SDL_PollEvent(&game.event)) {
             if (game.event.type == SDL_QUIT) {
                 game.quite = 1;
             }
-            if (game.event.type == SDL_MOUSEBUTTONUP)
-            {
-
-                printf("Mouse button released\n");
+            if (game.event.type == SDL_MOUSEBUTTONDOWN) {
+                game.mouse_pressed = 1;
+                printf("Mouse button pressed %d\n", game.event.button.button);
+            }
+            if (game.event.type == SDL_MOUSEBUTTONUP) {
+                game.mouse_pressed = 0;
+                printf("Mouse button released %d\n", game.event.button.button);
                 game.released_mouse = game.event.button.button;
                 game.event.button.button = 0;
-
-
-            }
-
-        }
-
-
-        update_buttons(&game,game.current_node->menu->buttonlist,game.current_node->menu->b_ct);
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-        //render_background(&game);
-
-
-        render_menu(&game,game.current_node->menu);
-
-
-
-        SDL_Flip(game.screen);
-    }
-
-
-
-
-    SDL_Quit();
-
-
-
-
-
-    return 0;
-}
-
-
-/*  nodes be like :
- *
- *
- *
- *
- *                              |->
- *                              |->n2
- ********************* n0 -> n1 |->n
- *                              |->n0
- *
- *
- *
- *
- *
- *
- */
-
-
-
-int main(int argc, char *argv[]){
-    // obv testing ....
-    //return test();
-    //return test3();
-    //return test4();
-
-
-    printf("pizza = %d\n",pizza());
-    Game game;
-    Ini_Game(&game);
-    load_background(&game);
-    printf("testing ... \n");
-
-
-    M_node n;
-    M_node n1;
-    M_node n0;
-    M_node n2;
-    game.current_node = &n1;
-
-    Menu play = play_menu(game); ;
-    Menu exit = exit_menu(game);
-    Menu options = options_menu(game);
-    Menu GET_YO_SORRY_ASS_TO_WORK = WIP_menu(game);
-    node_Init(&n0,&exit,0 );
-    node_Init(&n1,&play,1);
-    node_Init(&n2,&options,2);
-    node_Init(&n,&GET_YO_SORRY_ASS_TO_WORK,3);
-
-    printf("%p\n",n0.parent);
-
-    //n1.parent = &n0;
-
-
-
-
-
-    //node_Init(&exit,play_menu(game));
-
-    // WIP exit
-
-
-
-    //cooked = exit_menu(game);
-
-
-   // main_menu.parent = &exit;
-
-
-
-
-    game.current_menu = n1.menu;
-
-    //SDL_Event event;   // use the game event
-    while (!game.quite) {
-        SDL_GetMouseState(&game.x_mouse,&game.y_mouse);
-        game.released_mouse = 0;
-        while (SDL_PollEvent(&game.event)) {
-            if (game.event.type == SDL_QUIT) {
-                game.quite = 1;
-            }
-            if (game.event.type == SDL_MOUSEBUTTONUP)
-            {
-
-                printf("Mouse button released\n");
-                game.released_mouse = game.event.button.button;
-                game.event.button.button = 0;
-
-
             }
 
 
@@ -633,7 +530,7 @@ int main(int argc, char *argv[]){
                     }
 
 
-                    // HELP
+                    // info
 
                     if (game.current_node->menu-> buttonlist[2].isClicked ){
                         game.current_node = &n;
@@ -643,10 +540,18 @@ int main(int argc, char *argv[]){
 
 
 
-
+                // quite
                     if (game.current_node->menu-> buttonlist[3].isClicked ){
-                        game.current_node = &n0;
+                        game.current_node = &n;
+                        break;
                     }
+
+                // HELP
+                if (game.current_node->menu-> buttonlist[4].isClicked ){
+                    game.current_node = &n;
+                    break;
+                }
+
 
 
 
@@ -654,12 +559,28 @@ int main(int argc, char *argv[]){
                     break;
                 }
 
-            case 2:
+            case 2: //option menu
             {
 
                 if (game.current_node->menu-> buttonlist[0].isClicked )
                 {
                     update_txt(&game.current_node->menu->txtlist[0] ,"yeah that button doesn't work...",BLACK,game.main_font);
+                    game.current_node->menu->slider_list[0].val -= 10;
+
+                    game.current_node->menu->buttonlist[0].b_switch = ! game.current_node->menu->buttonlist[0].b_switch;
+                    //printf("switching..\n");
+                    if (game.current_node->menu->buttonlist[0].b_switch)
+                    {
+                        update_txt(&game.current_node->menu->buttonlist[0].txt,"volume off",GOLD,NULL);
+                        game.current_node->menu->slider_list[0].val = 0;
+                    }else
+                    {
+                        update_txt(&game.current_node->menu->buttonlist[0].txt,"volume on",GOLD,NULL);
+                        //update_slider(&game,&game.current_node->menu->slider_list[0],69);
+                        game.current_node->menu->slider_list[0].val = 69;
+                        // this code works , the button ineed move between 0 and 69 as i switch on and off volume
+                    }
+
                 }
                 if (game.current_node->menu-> buttonlist[1].isClicked )
                 {
@@ -669,6 +590,20 @@ int main(int argc, char *argv[]){
                 {
                     update_txt(&game.current_node->menu->txtlist[0] ," W I P ig....",BLACK,game.big_main_font);
                     game.current_node = &n1;
+                }
+                //handle_slider_input(&game,&game.current_node->menu->slider_list[0]);
+                update_slider(&game,&game.current_node->menu->slider_list[0],game.current_node->menu->slider_list[0].val);
+                if (is_clicked(&game,&game.current_node->menu->slider_list[0].b_rect) )
+                {
+                    printf("clicked");
+                }
+                if (is_hovered(&game,&game.current_node->menu->slider_list[0].b_rect) )
+                {
+                    printf("hovered");
+                }
+                if (is_pressed(&game,&game.current_node->menu->slider_list[0].b_rect))
+                {
+                    printf("pressed");
                 }
 
                 break;
@@ -711,24 +646,495 @@ int main(int argc, char *argv[]){
 
 
 
-        /*
-        printf("%d\n",game.current_node->id);
 
 
-        if (game.current_node->menu-> buttonlist[0].isClicked )
+
+
+        render_background(&game);
+
+
+        render_menu(&game,game.current_node->menu);
+        //render_slider(&game,&s);
+
+
+        SDL_Flip(game.screen);
+        printf("gp %d , gr %d\n",game.mouse_pressed,game.released_mouse);
+        game.event.button.button = 0;
+    }
+
+
+
+
+    SDL_Quit();
+    return 0;
+
+}
+
+
+
+//random import
+int displayMenu(SDL_Surface *screen, TTF_Font *font) {
+    SDL_Surface *menuSurface = SDL_CreateRGBSurface(SDL_SWSURFACE, 800, 600, 32, 0, 0, 0, 0);
+    SDL_FillRect(menuSurface, NULL, SDL_MapRGB(menuSurface->format, 0, 0, 0));
+
+    SDL_Color textColor = {255, 255, 255};
+    SDL_Surface *textSurface = TTF_RenderText_Solid(font, "Play Again?", textColor);
+    SDL_Rect dstRect = { 300, 250, textSurface->w, textSurface->h };
+    SDL_BlitSurface(textSurface, NULL, menuSurface, &dstRect);
+    SDL_FreeSurface(textSurface);
+
+    SDL_Rect yesRect = { 300, 350, 100, 50 };
+    SDL_Rect noRect = { 400, 350, 100, 50 };
+
+    SDL_FillRect(menuSurface, &yesRect, SDL_MapRGB(menuSurface->format, 0, 255, 0));
+    SDL_FillRect(menuSurface, &noRect, SDL_MapRGB(menuSurface->format, 255, 0, 0));
+
+    textSurface = TTF_RenderText_Solid(font, "Yes", textColor);
+    dstRect = (SDL_Rect){ 325, 360, textSurface->w, textSurface->h };
+    SDL_BlitSurface(textSurface, NULL, menuSurface, &dstRect);
+    SDL_FreeSurface(textSurface);
+
+    textSurface = TTF_RenderText_Solid(font, "No", textColor);
+    dstRect = (SDL_Rect){ 425, 360, textSurface->w, textSurface->h };
+    SDL_BlitSurface(textSurface, NULL, menuSurface, &dstRect);
+    SDL_FreeSurface(textSurface);
+
+    SDL_BlitSurface(menuSurface, NULL, screen, NULL);
+    SDL_Flip(screen);
+    SDL_FreeSurface(menuSurface);
+
+
+    SDL_Event e;
+    while (1) {
+        while (SDL_PollEvent(&e)) {
+            if (e.type == SDL_QUIT) {
+                return 0;
+            } else if (e.type == SDL_MOUSEBUTTONDOWN) {
+                int mouseX = e.button.x;
+                int mouseY = e.button.y;
+                if (mouseX >= yesRect.x && mouseX <= yesRect.x + yesRect.w &&
+                    mouseY >= yesRect.y && mouseY <= yesRect.y + yesRect.h) {
+                    return 1; // Yes
+                } else if (mouseX >= noRect.x && mouseX <= noRect.x + noRect.w &&
+                           mouseY >= noRect.y && mouseY <= noRect.y + noRect.h) {
+                    return 0; // No
+                }
+            }
+        }
+    }
+}
+
+// gameplay test
+int test5()
+{
+
+
+
+
+
+
+
+
+
+
+
+    if (SDL_Init(SDL_INIT_VIDEO) != 0) {
+        printf("SDL_Init Error: %s\n", SDL_GetError());
+        return 1;
+    }
+
+    if (TTF_Init() == -1) {
+        printf("TTF_Init Error: %s\n", TTF_GetError());
+        SDL_Quit();
+        return 1;
+    }
+
+    TTF_Font *font = TTF_OpenFont(FREDOKA_PATH, 24);
+    if (font == NULL) {
+        printf("TTF_OpenFont Error: %s\n", TTF_GetError());
+        TTF_Quit();
+        SDL_Quit();
+        return 1;
+    }
+
+    SDL_Surface *screen = SDL_SetVideoMode(WIDTH, HEIGHT, 32, SDL_SWSURFACE);
+    if (screen == NULL) {
+        printf("SDL_SetVideoMode Error: %s\n", SDL_GetError());
+        TTF_CloseFont(font);
+        TTF_Quit();
+        SDL_Quit();
+        return 1;
+    }
+
+    Player player;
+    initPlayer(&player);
+
+    Bullet bullets[MAX_BULLETS] = {0};
+    int bulletCount = 0;
+
+    Enemy enemies[MAX_ENEMIES] = {0};
+    int enemyCount = 0;
+    spawnEnemies(enemies, &enemyCount);
+    SDL_Event e;
+    int quit = 0;
+    int mouseX, mouseY;
+
+    while (!quit) {
+        while (SDL_PollEvent(&e)) {
+            if (e.type == SDL_QUIT) {
+                quit = 1;
+            } else if (e.type == SDL_MOUSEBUTTONDOWN) {
+                SDL_GetMouseState(&mouseX, &mouseY);
+                shootBullet(bullets, &bulletCount, mouseX, mouseY, player.x + SQUARE_SIZE / 2, player.y + SQUARE_SIZE / 2);
+            } else if (e.type == SDL_KEYDOWN || e.type == SDL_KEYUP) {
+                handlePlayerMovement(&player, e);
+                if (e.type == SDL_KEYDOWN && e.key.keysym.sym == SDLK_f && (SDL_GetModState() & KMOD_CTRL)) {
+                    toggleFullscreen(screen);
+                } else if (e.type == SDL_KEYDOWN && e.key.keysym.sym == SDLK_ESCAPE) {
+                    int playAgain = displayMenu(screen, font);
+                    if (playAgain == 0) {
+                        quit = 1;
+                    } else {
+                        // Reset game state
+                        initPlayer(&player);
+                        bulletCount = 0;
+                        enemyCount = 0;
+                        for (int i = 0; i < MAX_ENEMIES; i++) {
+                            enemies[i].active = false;
+                        }
+                        //spawnEnemies(enemies, &enemyCount);
+                    }
+                }
+            }
+        }
+
+        updatePlayer(&player);
+        updateBullets(bullets, &bulletCount, enemies, enemyCount);
+        updateEnemies(enemies, enemyCount, player.x, player.y);
+        checkCollisions(enemies, enemyCount, player.x, player.y, &player.health);
+
+        // Level up when enemies die
+        for (int i = 0; i < MAX_ENEMIES; i++) {
+            if (!enemies[i].active) {
+                player.level++;
+                enemies[i].active = true;
+                enemies[i].x = rand() % 800;
+                enemies[i].y = rand() % 600;
+            }
+        }
+
+        if (player.health <= 0) {
+            int playAgain = displayMenu(screen, font);
+            if (playAgain == 0) {
+                quit = 1;
+            } else {
+                // Reset game state
+                initPlayer(&player);
+                bulletCount = 0;
+                enemyCount = 0;
+                for (int i = 0; i < MAX_ENEMIES; i++) {
+                    enemies[i].active = false;
+                }
+                spawnEnemies(enemies, &enemyCount);
+            }
+        }
+
+        SDL_FillRect(screen, NULL, SDL_MapRGB(screen->format, 0, 0, 0));
+
+        renderPlayer(screen, &player);
+        renderBullets(screen, bullets, bulletCount);
+        renderEnemies(screen, enemies, enemyCount);
+        renderStatus(screen, player.health, bulletCount, player.level, font);
+
+        SDL_Flip(screen);
+
+        SDL_Delay(16);
+    }
+    TTF_CloseFont(font);
+    TTF_Quit();
+    SDL_Quit();
+    return 0;
+
+
+
+
+
+
+
+}
+
+
+/*
+ *
+ *                                              **********************************************************
+ *                                              * * *       E N D         O F        F I E L D       * * *
+ *                                              **********************************************************
+ *
+ */
+
+
+
+/*  nodes be like :
+ *
+ *
+ *
+ *
+ *                              |->
+ *                              |->n2
+ ********************* n0 -> n1 |->n
+ *                              |->n0
+ *
+ *
+ *
+ *
+ *
+ *
+ */
+
+
+
+int main(int argc, char *argv[]){
+    // obv testing ....
+    //return test();
+    //return test3();
+
+    //return test5();
+
+
+    printf("pizza = %d\n",pizza());
+    Game game;
+    Ini_Game(&game);
+    load_background(&game);
+    printf("testing ... \n");
+
+
+    M_node n;
+    M_node n1;
+    M_node n0;
+    M_node n2;
+
+
+    Menu play = play_menu(game); ;
+    Menu exit = exit_menu(game);
+    Menu options = options_menu(game);
+    Menu GET_YO_SORRY_ASS_TO_WORK = WIP_menu(game);
+    node_Init(&n0,&exit,0 );
+    node_Init(&n1,&play,1);
+    node_Init(&n2,&options,2);
+    //WIP
+    node_Init(&n,&GET_YO_SORRY_ASS_TO_WORK,-1);
+
+    printf("%p\n",n0.parent);
+
+    //n1.parent = &n0;
+
+    game.current_node = &n1;
+
+
+
+    //node_Init(&exit,play_menu(game));
+
+    // WIP exit
+
+
+
+    //cooked = exit_menu(game);
+
+
+   // main_menu.parent = &exit;
+
+
+
+
+    game.current_menu = n1.menu;
+
+    //SDL_Event event;   // use the game event
+    while (!game.quite) {
+        SDL_GetMouseState(&game.x_mouse,&game.y_mouse);
+        game.released_mouse = 0;
+        while (SDL_PollEvent(&game.event)) {
+            if (game.event.type == SDL_QUIT) {
+                game.quite = 1;
+            }
+            if (game.event.type == SDL_MOUSEBUTTONDOWN) {
+                game.mouse_pressed = 1;
+                //printf("Mouse button pressed %d\n", game.event.button.button);
+            }
+            if (game.event.type == SDL_MOUSEBUTTONUP) {
+                game.mouse_pressed = 0;
+                //printf("Mouse button released %d\n", game.event.button.button);
+                game.released_mouse = game.event.button.button;
+                game.event.button.button = 0;
+            }
+        }
+
+
+
+        update_buttons(&game,game.current_node->menu->buttonlist,game.current_node->menu->b_ct);
+
+
+
+        switch (game.current_node->id)
         {
-            update_txt(&game.current_node->menu->buttonlist[0].txt,"P L A Y",GOLD,NULL);
+
+        case -1:
+            {
+                if (game.current_node->menu-> buttonlist[0].isClicked )
+                {
+                    game.current_node = &n1;
+                }
+                break;
+            }
+
+
+        case 0 :
+            {
+                if (game.current_node->menu-> buttonlist[0].isClicked )
+                {
+                    game.current_node = &n1;
+
+                }
+
+
+                if (game.current_node->menu-> buttonlist[1].isClicked )
+                {
+                    game.quite = 1;
+                }
+
+
+                break;
+            }
+            case 1:
+                {
+
+
+
+
+                    if (game.current_node->menu-> buttonlist[0].isClicked )
+                    {
+                        update_txt(&game.current_node->menu->buttonlist[0].txt,"P L A Y",GOLD,NULL);
+                        printf("we are about to play\n");
+                        return  test5();
+                        break;
+
+                    }
+
+
+                    // options
+                    if (game.current_node->menu-> buttonlist[1].isClicked ){
+                        game.current_node = &n2;
+                        break; // big fix
+                    }
+
+
+                    // info
+
+                    if (game.current_node->menu-> buttonlist[2].isClicked ){
+                        game.current_node = &n;
+                        break;
+                    }
+
+
+
+
+                // quite
+                    if (game.current_node->menu-> buttonlist[3].isClicked ){
+                        game.current_node = &n0;
+                        break;
+                    }
+
+                // HELP
+                if (game.current_node->menu-> buttonlist[4].isClicked ){
+                    game.current_node = &n;
+                    break;
+                }
+
+
+
+
+
+                    break;
+                }
+
+            case 2:
+            {
+
+               if (game.current_node->menu-> buttonlist[0].isClicked )
+                {
+                    update_txt(&game.current_node->menu->txtlist[0] ,"yeah that button doesn't work...",BLACK,game.main_font);
+                    game.current_node->menu->slider_list[0].val -= 10;
+
+                    game.current_node->menu->buttonlist[0].b_switch = ! game.current_node->menu->buttonlist[0].b_switch;
+                    //printf("switching..\n");
+                    if (game.current_node->menu->buttonlist[0].b_switch)
+                    {
+                        update_txt(&game.current_node->menu->buttonlist[0].txt,"volume off",GOLD,NULL);
+                        game.current_node->menu->slider_list[0].val = 0;
+                    }else
+                    {
+                        update_txt(&game.current_node->menu->buttonlist[0].txt,"volume on",GOLD,NULL);
+                        //update_slider(&game,&game.current_node->menu->slider_list[0],69);
+                        game.current_node->menu->slider_list[0].val = 69;
+                        // this code works , the button ineed move between 0 and 69 as i switch on and off volume
+                    }
+
+                }
+                if (game.current_node->menu-> buttonlist[1].isClicked )
+                {
+                    toggle_fullscreen(&game) ;
+                }
+                if (game.current_node->menu-> buttonlist[2].isClicked )
+                {
+                    update_txt(&game.current_node->menu->txtlist[0] ," W I P ig....",BLACK,game.big_main_font);
+                    game.current_node = &n1;
+                    break;
+                }
+                //handle_slider_input(&game,&game.current_node->menu->slider_list[0]);
+                update_slider(&game,&game.current_node->menu->slider_list[0],game.current_node->menu->slider_list[0].val);
+                //the vol is being updated
+                game.music_volume = game.current_node->menu->slider_list[0].val;
+                /*
+                if (is_clicked(&game,&game.current_node->menu->slider_list[0].b_rect) )
+                {
+                    printf("clicked");
+                }
+                if (is_hovered(&game,&game.current_node->menu->slider_list[0].b_rect) )
+                {
+                    printf("hovered");
+                }
+                if (is_pressed(&game,&game.current_node->menu->slider_list[0].b_rect))
+                {
+                    printf("pressed");
+                }
+                */
+
+                break;
+            }
+
+
+
+
+
+
+
+            default:
+                printf("get out ");
+            break;
+
+
+
+
 
         }
 
 
-        if (game.current_node->menu-> buttonlist[game.current_node->menu->b_ct - 1].isClicked)
-        {
-            //game.quite = 1;
-            //printf("par : %s\n",game.current_node->parent->name);
-            game.current_node = game.current_node->parent;
-        }
-        */
+
+
+
+
+
+
+
 
 
 

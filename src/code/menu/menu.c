@@ -4,12 +4,16 @@
 
 #include "menu.h"
 
+#include "../slider/slider.h"
 
 
 void Init_Menu(Menu *menu)
 {
  menu->b_ct = 0;
  menu->txt_ct = 0;
+ menu->s_margine =0;
+ menu->s_ct=0;
+ menu->slider_list = NULL;
  menu->b_margine =0;
  menu->t_margine=0;
  menu->buttonlist = NULL;
@@ -29,6 +33,15 @@ if (menu->background)
  //printf("there is a bg");
  SDL_BlitSurface(menu->background,NULL,game->screen,NULL);
 }
+
+
+ if (menu->slider_list)
+ {
+  for (int i = 0; i < menu->s_ct; i++)
+  {
+   render_slider(game,&menu->slider_list[i]);
+  }
+ }
 
 
  if (menu->buttonlist)

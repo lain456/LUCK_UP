@@ -19,11 +19,11 @@
 
 
 
-/*
+
 void initPlayer(Player *player);
 void handlePlayerMovement(Player *player, SDL_Event e);
 void updatePlayer(Player *player);
 void renderPlayer(SDL_Surface *screen, Player *player);
-*/
+
 
 #endif // PLAYER_H

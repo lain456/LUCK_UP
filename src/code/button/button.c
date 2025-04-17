@@ -73,7 +73,7 @@ int is_hovered(Game *game, SDL_Rect *rect)
 
 int is_pressed(Game *game, SDL_Rect *rect){
 
-  return is_hovered(game,rect)&& game->event.button.button !=0;
+  return is_hovered(game,rect)&& game->mouse_pressed;
   }
 
 
@@ -160,6 +160,7 @@ Button *create_button(Game *game ,int x,int y,int h,int w ,char* text ,SDL_Color
     Button *button = (Button *)malloc(sizeof(Button));
     button->txt.writen = text;
     button->txt.font = game->main_font;
+    button->b_switch = 0;
     button->x = x;
     button->y = y;
     button->w = w;

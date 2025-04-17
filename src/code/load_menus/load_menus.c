@@ -6,6 +6,7 @@
 #include "load_menus.h"
 #include "../game/game.h"
 #include "../tools/tools.h"
+#include "../slider/slider.h"
 
 
 
@@ -40,7 +41,7 @@ Menu play_menu(Game game)
 
 
     //custom play_menu
-    play.b_ct =4;
+    play.b_ct =5;
     play.txt_ct = 3 ;
     play.t_margine =10;
     play.b_margine = 10;
@@ -54,7 +55,7 @@ Menu play_menu(Game game)
 
 
     //Button names and txts
-    char *button_strings[] = {"play","options","help","quit"};
+    char *button_strings[] = {"play","options","info","quit","help"};
     for (int i = 0; i < play.b_ct; i++)
     {
         play.buttonlist[i] = *create_button(&game,(WIDTH - game.x_button_size)/2,300 ,game.y_button_size,game.x_button_size,button_strings[i],WHITE,1);
@@ -64,14 +65,14 @@ Menu play_menu(Game game)
 
     y_order_buttons(play.buttonlist ,play.b_margine,play.b_ct);
 
-    //b_pos_update(&play.buttonlist[4],100 ,100);
+    b_pos_update(&play.buttonlist[4],game.width - game.x_button_size ,game.height - game.y_button_size + play.b_margine);
 
 
 
 
     play.txtlist[0] = *create_txt(" M A I N    G A M E ",game.big_main_font,BLACK,20,20);
     play.txtlist[1] = *create_txt("prsented by lain",game.main_font,BLACK,play.txtlist[0].rect.x,play.txtlist[0].rect.y + play.txtlist[0].rect.h + play.t_margine);
-    play.txtlist[2] = *create_txt("game logo here",game.main_font,BLACK,game.width - 250 , game.height - 40 - play.t_margine);
+    //play.txtlist[2] = *create_txt("game logo here",game.main_font,BLACK,game.width - 250 , game.height - 40 - play.t_margine);
 
 
 
@@ -126,41 +127,48 @@ Menu exit_menu(Game game)
 Menu options_menu(Game game)
 {
 
-
+   ;
     Menu new_menu;
     Init_Menu(&new_menu);
-    new_menu.background = create_color_surface(game.width,game.height,247,247,166);
+    //new_menu.background = create_color_surface(game.width,game.height,20,20,20);
+    //new_menu.background = create_color_surface(game.width,game.height,255,255,255);
 
     // custom menu (general)
     new_menu.b_ct =3;
     new_menu.txt_ct =1;
+    new_menu.s_ct = 1;
     new_menu.t_margine =10; // useless in this case cuz we only have 1 txt
     new_menu.b_margine =25;
-    char *button_strings[] = {"volume","fullscreen","return"};
+    new_menu.s_margine = 25;
+    char *button_strings[] = {"volume on","fullscreen","return"};
 
 
 
     new_menu.buttonlist = (Button*)malloc(sizeof(Button)*new_menu.b_ct);
     new_menu.txtlist = (Text*)malloc(sizeof(Text)*new_menu.txt_ct);
+    new_menu.slider_list = (Slider*)malloc(sizeof(Slider)*new_menu.s_ct);
 
 
     for (int i = 0; i < new_menu.b_ct; i++)
     {
-        new_menu.buttonlist[i] = *create_button(&game,(WIDTH - game.x_button_size)*5/20,(HEIGHT - game.y_button_size)*3/4 ,game.y_button_size,game.x_button_size,button_strings[i],WHITE,1);
+        new_menu.buttonlist[i] = *create_button(&game,(WIDTH - game.x_button_size)*12/32,(HEIGHT - game.y_button_size)*13/32 ,game.y_button_size,game.x_button_size,button_strings[i],WHITE,1);
     }
 
 
-    x_order_buttons(new_menu.buttonlist ,new_menu.b_margine,new_menu.b_ct);
+    y_order_buttons(new_menu.buttonlist ,new_menu.b_margine,new_menu.b_ct);
 
 
 //b_pos_update(&new_menu.buttonlist[2],200,HEIGHT - game.y_button_size);
 //
-//b_pos_update(&new_menu.buttonlist[1],600,HEIGHT - game.y_button_size);
+    //b_pos_update(&new_menu.buttonlist[0],(WIDTH - game.x_button_size)*10/32,(HEIGHT - game.y_button_size)*13/32);
     //update_txt(&new_menu.buttonlist[1].txt,new_menu.buttonlist[1].txt.writen,BLACK,game.mini_font);
 
 
-    new_menu.txtlist[0] = *create_txt("controls... ",game.big_main_font,BLACK,WIDTH*2/5,HEIGHT*2/5);
+    new_menu.txtlist[0] = *create_txt("controls... ",game.big_main_font,BLACK,WIDTH*2/5,HEIGHT*1/5);
 
+
+    Slider s = *create_slider(&game,(SDL_Rect){(WIDTH - game.x_button_size)*12/32 + game.x_button_size + new_menu.s_margine,(HEIGHT -game.y_slider_size)*27/64 ,game.x_slider_size,game.y_slider_size,});
+    new_menu.slider_list[0] = s;
 
     return new_menu;
 }
