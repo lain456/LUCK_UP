@@ -91,6 +91,10 @@
  *-                                                                                                                                                 ****
  *-             * options menu  :                                                                                                                   ****
  *                      |>higher and lower volume (slider optional )                                                                                ****
+ *                            |-> audio control  :                                                                                                  ****
+ *                                   |> vol change                                                                                                  ****
+ *                                   |> play sfx when clicking button                                                                               ****
+ *                                   |> audio test menu                                                                                             ****
  *                      |>fullscreen on and off , choose resolution (change game status )                    done !                                 ****
  *                      |>other functionalities like an info button cuz why not....                                     done ig.....                ****
  *              * hitting escape at any point will take you back one menu back ....                             !!!!!!!                             ****
@@ -672,7 +676,7 @@ int test4()
 
 
 
-//random import
+//gameplay import
 int displayMenu(SDL_Surface *screen, TTF_Font *font) {
     SDL_Surface *menuSurface = SDL_CreateRGBSurface(SDL_SWSURFACE, 800, 600, 32, 0, 0, 0, 0);
     SDL_FillRect(menuSurface, NULL, SDL_MapRGB(menuSurface->format, 0, 0, 0));
@@ -864,6 +868,225 @@ int test5()
 }
 
 
+// audio import
+
+// Function to initialize SDL
+int init() {
+    if (SDL_Init(SDL_INIT_VIDEO | SDL_INIT_AUDIO) != 0) {
+        printf("SDL_Init Error: %s\n", SDL_GetError());
+        return 0;
+    }
+    return 1;
+}
+
+// Function to load an image
+SDL_Surface* loadImage(const char* path) {
+    SDL_Surface* image = IMG_Load(path);
+    if (image == NULL) {
+        printf("IMG_Load Error: %s\n", IMG_GetError());
+    }
+    return image;
+}
+
+// Function to initialize SDL_mixer
+int initAudio() {
+    if (Mix_OpenAudio(44100, MIX_DEFAULT_FORMAT, 2, 2048) < 0) {
+        printf("SDL_mixer Error: %s\n", Mix_GetError());
+        return 0;
+    }
+    return 1;
+}
+
+// Function to load and play music
+Mix_Music* loadMusic(const char* path) {
+    Mix_Music* music = Mix_LoadMUS(path);
+    if (music == NULL) {
+        printf("Mix_LoadMUS Error: %s\n", Mix_GetError());
+    }
+    return music;
+}
+
+// Function to render the volume slider
+// Function to render the volume slider
+// Function to render the volume slider
+void renderVolumeSlider(SDL_Surface *screen, SDL_Surface *bar, SDL_Surface *barFill, SDL_Surface *circle, int volume) {
+    int barWidth = bar->w;
+    int barHeight = bar->h / 4; // Make the bar thinner
+    int circleRadius = circle->w / 2;
+    int fillWidth = (volume * barWidth) / MIX_MAX_VOLUME;
+
+    int centerX = (screen->w - barWidth) / 2; // Center the bar horizontally
+    int centerY = (screen->h - barHeight) / 2; // Center the bar vertically
+
+    // Adjust the bar and fill rectangles to be centered
+    SDL_Rect barRect = {centerX, centerY, barWidth, barHeight};
+    SDL_Rect fillRect = {centerX, centerY, fillWidth, barHeight};
+
+    // Adjust the circle rectangle to be centered
+    SDL_Rect circleRect = {centerX + fillWidth - circleRadius, centerY + (barHeight / 2) - circleRadius, circle->w, circle->h};
+
+    SDL_BlitSurface(bar, NULL, screen, &barRect);
+    SDL_BlitSurface(barFill, NULL, screen, &fillRect);
+    SDL_BlitSurface(circle, NULL, screen, &circleRect);
+}
+
+
+// Function to handle events
+void handleEvents(int* quit, int* fullscreen, int* volume, int* dragging, SDL_Surface** screen, SDL_Surface* bar, SDL_Surface* circle) {
+    SDL_Event event;
+    while (SDL_PollEvent(&event)) {
+        if (event.type == SDL_QUIT) {
+            *quit = 1;
+        } else if (event.type == SDL_KEYDOWN) {
+            switch (event.key.keysym.sym) {
+                case SDLK_SPACE:
+                    *quit = 1;
+                    break;
+                case SDLK_f:
+                    *fullscreen = !*fullscreen;
+                    *screen = SDL_SetVideoMode(800, 600, 32, *fullscreen ? SDL_FULLSCREEN : SDL_SWSURFACE);
+                    if (*screen == NULL) {
+                        printf("SDL_SetVideoMode Error: %s\n", SDL_GetError());
+                        *quit = 1;
+                    }
+                    break;
+            }
+        } else if (event.type == SDL_MOUSEBUTTONDOWN) {
+            int mouseX = event.button.x;
+            int mouseY = event.button.y;
+            int circleX = ((*screen)->w - bar->w) / 2 + (*volume * bar->w) / MIX_MAX_VOLUME - circle->w / 2;
+            int circleY = ((*screen)->h - bar->h / 4) / 2 + (bar->h / 4) / 2 - circle->h / 2;
+            if (mouseX >= circleX && mouseX <= circleX + circle->w && mouseY >= circleY && mouseY <= circleY + circle->h) {
+                *dragging = 1;
+            }
+        } else if (event.type == SDL_MOUSEBUTTONUP) {
+            *dragging = 0;
+        } else if (event.type == SDL_MOUSEMOTION && *dragging) {
+            int mouseX = event.motion.x;
+            *volume = ((mouseX - ((*screen)->w - bar->w) / 2) * MIX_MAX_VOLUME) / bar->w;
+            if (*volume < 0) *volume = 0;
+            if (*volume > MIX_MAX_VOLUME) *volume = MIX_MAX_VOLUME;
+            Mix_VolumeMusic(*volume);
+        }
+    }
+}
+
+
+
+
+
+// learning audio
+fat_ass_audio_test()
+{
+
+
+
+
+
+
+
+
+    if (!init()) {
+        return 1;
+    }
+
+    SDL_Surface *screen = SDL_SetVideoMode(800, 600, 32, SDL_SWSURFACE);
+    if (screen == NULL) {
+        printf("SDL_SetVideoMode Error: %s\n", SDL_GetError());
+        SDL_Quit();
+        return 1;
+    }
+
+    int imgFlags = IMG_INIT_PNG;
+    if (!(IMG_Init(imgFlags) & imgFlags)) {
+        printf("IMG_Init Error: %s\n", IMG_GetError());
+        SDL_Quit();
+        return 1;
+    }
+
+    SDL_Surface *image = loadImage("../grey.png");
+    SDL_Surface *bar = loadImage("../bar.png");
+    SDL_Surface *barFill = loadImage("../bar_fill.png");
+    SDL_Surface *circle = loadImage("../Circle.png");
+
+    if (image == NULL || bar == NULL || barFill == NULL || circle == NULL) {
+        SDL_Quit();
+        return 1;
+    }
+
+    // Scale the circle to be four times bigger
+    SDL_Surface *scaledCircle = scaleSurface(circle, circle->w * 4, circle->h * 4);
+
+    SDL_BlitSurface(image, NULL, screen, NULL);
+    SDL_Flip(screen);
+
+    if (!initAudio()) {
+        SDL_FreeSurface(image);
+        SDL_FreeSurface(bar);
+        SDL_FreeSurface(barFill);
+        SDL_FreeSurface(circle);
+        SDL_FreeSurface(scaledCircle);
+        SDL_Quit();
+        return 1;
+    }
+
+    Mix_Music *music = loadMusic("../src/assets/audio/music.mp3");
+    if (music == NULL) {
+        Mix_CloseAudio();
+
+        SDL_Quit();
+        return 1;
+    }
+
+    Mix_PlayMusic(music, -1);
+
+    int quit = 0;
+    int fullscreen = 0;
+    int volume = MIX_MAX_VOLUME / 2;
+    Mix_VolumeMusic(volume);
+    int dragging = 0;
+
+    while (!quit) {
+        handleEvents(&quit, &fullscreen, &volume, &dragging, &screen, bar, scaledCircle);
+
+        SDL_BlitSurface(image, NULL, screen, NULL);
+        renderVolumeSlider(screen, bar, barFill, scaledCircle, volume);
+        SDL_Flip(screen);
+    }
+
+    Mix_FreeMusic(music);
+    Mix_CloseAudio();
+    SDL_Quit();
+
+    return 0;
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+}
+
 /*
  *
  *                                              **********************************************************
@@ -899,7 +1122,7 @@ int main(int argc, char *argv[]){
     //return test3();
 
     //return test5();
-
+    //return fat_ass_audio_test();
 
     printf("pizza = %d\n",pizza());
     Game game;
@@ -1149,7 +1372,7 @@ int main(int argc, char *argv[]){
 
 
         render_menu(&game,game.current_node->menu);
-
+        printf("gp %d , gr %d , mv %d\n",game.mouse_pressed,game.released_mouse,game.music_volume);
 
 
         SDL_Flip(game.screen);
