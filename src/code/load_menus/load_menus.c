@@ -140,7 +140,7 @@ Menu options_menu(Game game)
     new_menu.t_margine =10; // useless in this case cuz we only have 1 txt
     new_menu.b_margine =25;
     new_menu.s_margine = 25;
-    char *button_strings[] = {"volume on","fullscreen","return"};
+    char *button_strings[] = {"music : on","fullscreen : on ","return"};
 
 
 
@@ -156,6 +156,10 @@ Menu options_menu(Game game)
 
 
     y_order_buttons(new_menu.buttonlist ,new_menu.b_margine,new_menu.b_ct);
+
+
+
+    //update_txt(&new_menu.buttonlist[1].txt,"fullscreen on",GOLD,game.mini_font);
 
 
 //b_pos_update(&new_menu.buttonlist[2],200,HEIGHT - game.y_button_size);

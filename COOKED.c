@@ -19,6 +19,7 @@
 
 #include "src/code/load_menus/load_menus.h"
 #include "src/code/slider/slider.h"
+#include "src/code/audio /audio.h"
 
 
 
@@ -92,9 +93,9 @@
  *-             * options menu  :                                                                                                                   ****
  *                      |>higher and lower volume (slider optional )                                                                                ****
  *                            |-> audio control  :                                                                                                  ****
- *                                   |> vol change                                                                                                  ****
+ *                                   |> vol change                                                           done!                                  ****
  *                                   |> play sfx when clicking button                                                                               ****
- *                                   |> audio test menu                                                                                             ****
+ *                                   |> audio test menu                                                      done!                                  ****
  *                      |>fullscreen on and off , choose resolution (change game status )                    done !                                 ****
  *                      |>other functionalities like an info button cuz why not....                                     done ig.....                ****
  *              * hitting escape at any point will take you back one menu back ....                             !!!!!!!                             ****
@@ -568,7 +569,7 @@ int test4()
 
                 if (game.current_node->menu-> buttonlist[0].isClicked )
                 {
-                    update_txt(&game.current_node->menu->txtlist[0] ,"yeah that button doesn't work...",BLACK,game.main_font);
+                    update_txt(&game.current_node->menu->txtlist[0] ,"everything works you just can't hear it ....",BLACK,game.main_font);
                     game.current_node->menu->slider_list[0].val -= 10;
 
                     game.current_node->menu->buttonlist[0].b_switch = ! game.current_node->menu->buttonlist[0].b_switch;
@@ -595,8 +596,12 @@ int test4()
                     update_txt(&game.current_node->menu->txtlist[0] ," W I P ig....",BLACK,game.big_main_font);
                     game.current_node = &n1;
                 }
-                //handle_slider_input(&game,&game.current_node->menu->slider_list[0]);
+
                 update_slider(&game,&game.current_node->menu->slider_list[0],game.current_node->menu->slider_list[0].val);
+                //the vol is being updated
+                game.music_volume = game.current_node->menu->slider_list[0].val;
+
+
                 if (is_clicked(&game,&game.current_node->menu->slider_list[0].b_rect) )
                 {
                     printf("clicked");
@@ -609,6 +614,7 @@ int test4()
                 {
                     printf("pressed");
                 }
+
 
                 break;
             }
@@ -662,7 +668,7 @@ int test4()
 
 
         SDL_Flip(game.screen);
-        printf("gp %d , gr %d\n",game.mouse_pressed,game.released_mouse);
+        printf("gp %d , gr %d , mv %d\n",game.mouse_pressed,game.released_mouse,game.music_volume);
         game.event.button.button = 0;
     }
 
@@ -976,16 +982,8 @@ void handleEvents(int* quit, int* fullscreen, int* volume, int* dragging, SDL_Su
 
 
 // learning audio
-fat_ass_audio_test()
+int fat_ass_audio_test()
 {
-
-
-
-
-
-
-
-
     if (!init()) {
         return 1;
     }
@@ -1030,10 +1028,9 @@ fat_ass_audio_test()
         return 1;
     }
 
-    Mix_Music *music = loadMusic("../src/assets/audio/music.mp3");
+    Mix_Music *music = loadMusic(MUSIC_PATH);
     if (music == NULL) {
         Mix_CloseAudio();
-
         SDL_Quit();
         return 1;
     }
@@ -1046,46 +1043,404 @@ fat_ass_audio_test()
     Mix_VolumeMusic(volume);
     int dragging = 0;
 
+    Mix_Chunk *sfx = Mix_LoadWAV(HOVER_SFX_PATH);
+    if (!sfx) {
+        printf("Mix_LoadWAV Error: %s\n", Mix_GetError());
+    } else {
+        printf("WAV loaded successfully!\n");
+    }
+
+    // Variables for hover detection
+    int isHovering = 0; // Tracks if mouse is currently hovering
+    int wasHovering = 0; // Tracks previous hover state to detect entry
+
     while (!quit) {
-        handleEvents(&quit, &fullscreen, &volume, &dragging, &screen, bar, scaledCircle);
+        // Compute circle position (same as renderVolumeSlider)
+        int barWidth = bar->w;
+        int barHeight = bar->h / 4;
+        int circleRadius = scaledCircle->w / 2;
+        int fillWidth = (volume * barWidth) / MIX_MAX_VOLUME;
+        int centerX = (screen->w - barWidth) / 2;
+        int centerY = (screen->h - barHeight) / 2;
+        int circle_x = centerX + fillWidth - circleRadius;
+        int circle_y = centerY + (barHeight / 2) - circleRadius;
+        int circle_w = scaledCircle->w;
+        int circle_h = scaledCircle->h;
+
+        SDL_Event event;
+        while (SDL_PollEvent(&event)) {
+            if (event.type == SDL_QUIT) {
+                quit = 1;
+            } else if (event.type == SDL_KEYDOWN) {
+                if (event.key.keysym.sym == SDLK_f) {
+                    fullscreen = !fullscreen;
+                    screen = SDL_SetVideoMode(800, 600, 32, SDL_SWSURFACE | (fullscreen ? SDL_FULLSCREEN : 0));
+                    if (screen == NULL) {
+                        printf("SDL_SetVideoMode Error: %s\n", SDL_GetError());
+                        quit = 1;
+                    }
+                }
+            } else if (event.type == SDL_MOUSEMOTION) {
+                int mouse_x = event.motion.x;
+                int mouse_y = event.motion.y;
+
+                // Check if mouse is over the circle
+                isHovering = (mouse_x >= circle_x && mouse_x <= circle_x + circle_w &&
+                              mouse_y >= circle_y && mouse_y <= circle_y + circle_h);
+
+                // Play sound when mouse enters the circle
+                if (isHovering && !wasHovering && sfx) {
+                    Mix_PlayChannel(-1, sfx, 0);
+                }
+
+                wasHovering = isHovering;
+
+                // Update volume if dragging
+                if (dragging) {
+                    volume = ((mouse_x - centerX) * MIX_MAX_VOLUME) / barWidth;
+                    if (volume < 0) volume = 0;
+                    if (volume > MIX_MAX_VOLUME) volume = MIX_MAX_VOLUME;
+                    Mix_VolumeMusic(volume);
+                }
+            } else if (event.type == SDL_MOUSEBUTTONDOWN) {
+                int mouse_x = event.button.x;
+                int mouse_y = event.button.y;
+                if (mouse_x >= circle_x && mouse_x <= circle_x + circle_w &&
+                    mouse_y >= circle_y && mouse_y <= circle_y + circle_h) {
+                    dragging = 1;
+                }
+            } else if (event.type == SDL_MOUSEBUTTONUP) {
+                dragging = 0;
+            }
+
+            // Call existing handleEvents for other interactions
+            handleEvents(&quit, &fullscreen, &volume, &dragging, &screen, bar, scaledCircle);
+        }
 
         SDL_BlitSurface(image, NULL, screen, NULL);
         renderVolumeSlider(screen, bar, barFill, scaledCircle, volume);
         SDL_Flip(screen);
     }
 
+    Mix_FreeChunk(sfx);
     Mix_FreeMusic(music);
     Mix_CloseAudio();
+    SDL_FreeSurface(image);
+    SDL_FreeSurface(bar);
+    SDL_FreeSurface(barFill);
+    SDL_FreeSurface(circle);
+    SDL_FreeSurface(scaledCircle);
     SDL_Quit();
 
     return 0;
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
 }
+
+// integrate some pussy sfx
+
+
+int test69() {
+
+Game game;
+    Ini_Game(&game);
+    load_background(&game);
+    printf("testing ... \n");
+
+
+    //doing some music
+    game.music = loadMusic(MUSIC_PATH);
+    if (game.music == NULL) {
+        Mix_CloseAudio();
+        SDL_Quit();
+        return 1;
+    }
+
+    Mix_PlayMusic(game.music, -1);
+
+
+
+
+
+
+    M_node n,n0,n1,n2;
+    //create menus
+    Menu play = play_menu(game) ,exit = exit_menu(game) ,options = options_menu(game) ,GET_YO_SORRY_ASS_TO_WORK = WIP_menu(game);
+    // link menus to nodes
+
+    node_Init(&n1,&play,1);  node_Init(&n0,&exit,0 );  node_Init(&n2,&options,2);  node_Init(&n,&GET_YO_SORRY_ASS_TO_WORK,3);
+
+
+
+
+
+    game.current_node = &n2;
+
+
+    // trying out sliders
+//Slider s = *create_slider(&game,(SDL_Rect){(WIDTH-game.x_slider_size) *3/4,(HEIGHT -game.y_slider_size)*1/3 ,game.x_slider_size,game.y_slider_size,});
+//printf("s = %d",s.val);
+
+
+
+
+
+
+
+    //SDL_Event event;   // use the game event
+    while (!game.quite) {
+        SDL_GetMouseState(&game.x_mouse,&game.y_mouse);
+        game.released_mouse = 0;
+        //game.mouse_pressed = 0;
+        while (SDL_PollEvent(&game.event)) {
+            if (game.event.type == SDL_QUIT) {
+                game.quite = 1;
+            }
+            if (game.event.type == SDL_MOUSEBUTTONDOWN) {
+                game.mouse_pressed = 1;
+                printf("Mouse button pressed %d\n", game.event.button.button);
+            }
+            if (game.event.type == SDL_MOUSEBUTTONUP) {
+                game.mouse_pressed = 0;
+                printf("Mouse button released %d\n", game.event.button.button);
+                game.released_mouse = game.event.button.button;
+                game.event.button.button = 0;
+            }
+
+
+
+
+        }
+
+
+
+        update_buttons(&game,game.current_node->menu->buttonlist,game.current_node->menu->b_ct);
+
+
+
+        switch (game.current_node->id)
+        {
+
+
+        case 0 :
+            {
+                if (game.current_node->menu-> buttonlist[0].isClicked )
+                {
+                    game.current_node = &n1;
+
+                }
+
+
+                if (game.current_node->menu-> buttonlist[1].isClicked )
+                {
+                    game.quite = 1;
+                }
+
+
+                break;
+            }
+            case 1:
+                {
+
+
+
+
+                    if (game.current_node->menu-> buttonlist[0].isClicked )
+                    {
+                        update_txt(&game.current_node->menu->buttonlist[0].txt,"P L A Y",GOLD,NULL);
+                        printf("we are about to play\n");
+                        break;
+
+                    }
+
+
+                    // options
+                    if (game.current_node->menu-> buttonlist[1].isClicked ){
+                        game.current_node = &n2;
+                        break; // big fix
+                    }
+
+
+                    // info
+
+                    if (game.current_node->menu-> buttonlist[2].isClicked ){
+                        game.current_node = &n;
+                        break;
+                    }
+
+
+
+
+                // quite
+                    if (game.current_node->menu-> buttonlist[3].isClicked ){
+                        game.current_node = &n;
+                        break;
+                    }
+
+                // HELP
+                if (game.current_node->menu-> buttonlist[4].isClicked ){
+                    game.current_node = &n;
+                    break;
+                }
+
+
+
+
+
+                    break;
+                }
+
+            case 2: //option menu
+            {
+                // auto  on / off
+
+
+
+                if (game.current_node->menu-> buttonlist[0].isClicked )
+                {
+                    update_txt(&game.current_node->menu->txtlist[0] ,"yeah that button doesn't work...yet",BLACK,game.main_font);
+
+                    // fixed a bug here     -lain
+                    switch (game.music_volume )
+                    {
+                        case 0:
+                            {
+                                game.music_volume = 69;
+                                break;
+                            }
+                        default:
+                            {
+                                game.music_volume = 0;
+                                break;
+                            }
+                    }
+                }
+
+
+
+
+                update_slider(&game,&game.current_node->menu->slider_list[0],game.music_volume);
+                //the vol is being updated
+                game.music_volume = game.current_node->menu->slider_list[0].val;
+
+
+
+
+
+
+                if (game.music_volume!=0)
+                {
+                    update_txt(&game.current_node->menu->buttonlist[0].txt,"music on",GOLD,NULL);
+
+                }else
+                {
+                    update_txt(&game.current_node->menu->buttonlist[0].txt,"music off",GOLD,NULL);
+
+                }
+
+
+
+
+
+
+                switch (game.fullscreen)
+                {
+                    case 0:
+                        {
+                            update_txt(&game.current_node->menu->buttonlist[1].txt,"fullscreen on",GOLD,game.mini_font);
+                            break;
+                        }
+                    default:
+                        {
+                            update_txt(&game.current_node->menu->buttonlist[1].txt,"fullscreen off",GOLD,game.mini_font);
+                            break;
+                        }
+
+                }
+
+
+
+
+                if (game.current_node->menu-> buttonlist[1].isClicked )
+                {
+                    toggle_fullscreen(&game) ;
+
+                    break;
+                }
+
+
+
+
+                if (game.current_node->menu-> buttonlist[2].isClicked )
+                {
+                    update_txt(&game.current_node->menu->txtlist[0] ," W I P ig....",BLACK,game.big_main_font);
+                    game.current_node = &n1;
+                    break;
+                }
+
+
+                break;
+            }
+
+            case 3:
+            {
+                if (game.current_node->menu-> buttonlist[0].isClicked )
+                {
+                    game.current_node = &n1;
+                }
+                break;
+            }
+
+
+
+
+
+            default:
+                printf("get out ");
+            break;
+
+
+
+
+
+        }
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+        render_background(&game);
+
+
+        render_menu(&game,game.current_node->menu);
+        //render_slider(&game,&s);
+
+
+        SDL_Flip(game.screen);
+        printf("gp %d , gr %d , mv %d\n",game.mouse_pressed,game.released_mouse,game.music_volume);
+        game.event.button.button = 0;
+        Mix_VolumeMusic( MIX_MAX_VOLUME *  game.music_volume/100 );
+    }
+
+
+
+
+    SDL_Quit();
+    return 0;
+}
+
 
 /*
  *
@@ -1120,9 +1475,19 @@ int main(int argc, char *argv[]){
     // obv testing ....
     //return test();
     //return test3();
+    //return test4();
 
     //return test5();
     //return fat_ass_audio_test();
+    return test69();
+
+
+
+
+
+
+
+
 
     printf("pizza = %d\n",pizza());
     Game game;
@@ -1376,6 +1741,7 @@ int main(int argc, char *argv[]){
 
 
         SDL_Flip(game.screen);
+
     }
 
 

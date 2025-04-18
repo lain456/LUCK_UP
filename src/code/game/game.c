@@ -16,10 +16,13 @@ void Ini_Game(Game *game) {
         exit(1);
     }
 
-    if (Mix_OpenAudio(22050, MIX_DEFAULT_FORMAT, 2, 4096) < 0) {
+    if (Mix_OpenAudio(22050, MIX_DEFAULT_FORMAT, 4, 4096) < 0) {
         printf("Mix_OpenAudio failed: %s\n", Mix_GetError());
         exit(1);
     }
+
+
+
 
     if (IMG_Init(IMG_INIT_PNG) < 0) {
         printf("IMG_Init failed: %s\n", IMG_GetError());
@@ -30,7 +33,7 @@ void Ini_Game(Game *game) {
 
 
 
-
+    game->fullscreen = 0;
     game->released_mouse =0;
     game->mouse_pressed =0;
     game->height = HEIGHT;
@@ -86,6 +89,19 @@ void Ini_Game(Game *game) {
     game->b_slider = NULL;
     game->x_slider_size = 250;
     game->y_slider_size = 20;
+
+
+
+
+
+
+
+
+
+    // music stuff
+    game->music = NULL;
+    game->music_volume = 69 ;
+
 }
 
 

@@ -1,0 +1,124 @@
+//
+// Created by lain on 4/18/25.
+//
+
+
+
+
+
+
+
+
+
+
+
+int fat_ass_audio_test()
+{
+
+
+    Mix_Music *music = loadMusic(MUSIC_PATH);
+    if (music == NULL) {
+        Mix_CloseAudio();
+        SDL_Quit();
+        return 1;
+    }
+
+    Mix_PlayMusic(music, -1);
+
+    int quit = 0;
+    int fullscreen = 0;
+    int volume = MIX_MAX_VOLUME / 2;
+    Mix_VolumeMusic(volume);
+    int dragging = 0;
+
+    Mix_Chunk *sfx = Mix_LoadWAV(HOVER_SFX_PATH);
+    if (!sfx) {
+        printf("Mix_LoadWAV Error: %s\n", Mix_GetError());
+    } else {
+        printf("WAV loaded successfully!\n");
+    }
+
+    // Variables for hover detection
+    int isHovering = 0; // Tracks if mouse is currently hovering
+    int wasHovering = 0; // Tracks previous hover state to detect entry
+
+    while (!quit) {
+        // Compute circle position (same as renderVolumeSlider)
+        int barWidth = bar->w;
+        int barHeight = bar->h / 4;
+        int circleRadius = scaledCircle->w / 2;
+        int fillWidth = (volume * barWidth) / MIX_MAX_VOLUME;
+        int centerX = (screen->w - barWidth) / 2;
+        int centerY = (screen->h - barHeight) / 2;
+        int circle_x = centerX + fillWidth - circleRadius;
+        int circle_y = centerY + (barHeight / 2) - circleRadius;
+        int circle_w = scaledCircle->w;
+        int circle_h = scaledCircle->h;
+
+        SDL_Event event;
+        while (SDL_PollEvent(&event)) {
+            if (event.type == SDL_QUIT) {
+                quit = 1;
+            } else if (event.type == SDL_KEYDOWN) {
+                if (event.key.keysym.sym == SDLK_f) {
+                    fullscreen = !fullscreen;
+                    screen = SDL_SetVideoMode(800, 600, 32, SDL_SWSURFACE | (fullscreen ? SDL_FULLSCREEN : 0));
+                    if (screen == NULL) {
+                        printf("SDL_SetVideoMode Error: %s\n", SDL_GetError());
+                        quit = 1;
+                    }
+                }
+            } else if (event.type == SDL_MOUSEMOTION) {
+                int mouse_x = event.motion.x;
+                int mouse_y = event.motion.y;
+
+                // Check if mouse is over the circle
+                isHovering = (mouse_x >= circle_x && mouse_x <= circle_x + circle_w &&
+                              mouse_y >= circle_y && mouse_y <= circle_y + circle_h);
+
+                // Play sound when mouse enters the circle
+                if (isHovering && !wasHovering && sfx) {
+                    Mix_PlayChannel(-1, sfx, 0);
+                }
+
+                wasHovering = isHovering;
+
+                // Update volume if dragging
+                if (dragging) {
+                    volume = ((mouse_x - centerX) * MIX_MAX_VOLUME) / barWidth;
+                    if (volume < 0) volume = 0;
+                    if (volume > MIX_MAX_VOLUME) volume = MIX_MAX_VOLUME;
+                    Mix_VolumeMusic(volume);
+                }
+            } else if (event.type == SDL_MOUSEBUTTONDOWN) {
+                int mouse_x = event.button.x;
+                int mouse_y = event.button.y;
+                if (mouse_x >= circle_x && mouse_x <= circle_x + circle_w &&
+                    mouse_y >= circle_y && mouse_y <= circle_y + circle_h) {
+                    dragging = 1;
+                }
+            } else if (event.type == SDL_MOUSEBUTTONUP) {
+                dragging = 0;
+            }
+
+            // Call existing handleEvents for other interactions
+            handleEvents(&quit, &fullscreen, &volume, &dragging, &screen, bar, scaledCircle);
+        }
+
+        SDL_BlitSurface(image, NULL, screen, NULL);
+        renderVolumeSlider(screen, bar, barFill, scaledCircle, volume);
+        SDL_Flip(screen);
+    }
+
+    Mix_FreeChunk(sfx);
+    Mix_FreeMusic(music);
+    Mix_CloseAudio();
+    SDL_FreeSurface(image);
+    SDL_FreeSurface(bar);
+    SDL_FreeSurface(barFill);
+    SDL_FreeSurface(circle);
+    SDL_FreeSurface(scaledCircle);
+    SDL_Quit();
+
+    return 0;
+}

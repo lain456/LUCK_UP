@@ -154,6 +154,13 @@ build CMakeFiles/LUCK_UP.dir/gameplay/src/utils.c.o: C_COMPILER__LUCK_UP_unscann
   OBJECT_DIR = CMakeFiles/LUCK_UP.dir
   OBJECT_FILE_DIR = CMakeFiles/LUCK_UP.dir/gameplay/src
 
+build CMakeFiles/LUCK_UP.dir/src/code/audio_/audio.c.o: C_COMPILER__LUCK_UP_unscanned_Debug /home/lain/Desktop/nerding/SDL/LUCK$ UP/src/code/audio$ /audio.c || cmake_object_order_depends_target_LUCK_UP
+  DEP_FILE = CMakeFiles/LUCK_UP.dir/src/code/audio_/audio.c.o.d
+  FLAGS = -g -std=gnu11 -fdiagnostics-color=always
+  INCLUDES = -I/usr/include/SDL -I"/home/lain/Desktop/nerding/SDL/LUCK UP/gameplay/include" -I"/home/lain/Desktop/nerding/SDL/LUCK UP/src/code"
+  OBJECT_DIR = CMakeFiles/LUCK_UP.dir
+  OBJECT_FILE_DIR = CMakeFiles/LUCK_UP.dir/src/code/audio_
+
 
 # =============================================================================
 # Link build statements for EXECUTABLE target LUCK_UP
@@ -162,7 +169,7 @@ build CMakeFiles/LUCK_UP.dir/gameplay/src/utils.c.o: C_COMPILER__LUCK_UP_unscann
 #############################################
 # Link the executable LUCK_UP
 
-build LUCK_UP: C_EXECUTABLE_LINKER__LUCK_UP_Debug CMakeFiles/LUCK_UP.dir/COOKED.c.o CMakeFiles/LUCK_UP.dir/src/code/game/game.c.o CMakeFiles/LUCK_UP.dir/src/code/tools/tools.c.o CMakeFiles/LUCK_UP.dir/src/code/Player/player.c.o CMakeFiles/LUCK_UP.dir/src/code/Background/background.c.o CMakeFiles/LUCK_UP.dir/src/code/button/button.c.o CMakeFiles/LUCK_UP.dir/src/code/enemy/enemy.c.o CMakeFiles/LUCK_UP.dir/src/code/text/txt.c.o CMakeFiles/LUCK_UP.dir/src/code/menu/menu.c.o CMakeFiles/LUCK_UP.dir/src/code/load_menus/load_menus.c.o CMakeFiles/LUCK_UP.dir/src/code/slider/slider.c.o CMakeFiles/LUCK_UP.dir/gameplay/src/bullet.c.o CMakeFiles/LUCK_UP.dir/gameplay/src/collision.c.o CMakeFiles/LUCK_UP.dir/gameplay/src/enemy.c.o CMakeFiles/LUCK_UP.dir/gameplay/src/utils.c.o | /usr/lib/x86_64-linux-gnu/libSDLmain.a /usr/lib/x86_64-linux-gnu/libSDL.so /usr/lib/x86_64-linux-gnu/libSDL_ttf.so /usr/lib/x86_64-linux-gnu/libSDL_image.so /usr/lib/x86_64-linux-gnu/libSDL_mixer.so
+build LUCK_UP: C_EXECUTABLE_LINKER__LUCK_UP_Debug CMakeFiles/LUCK_UP.dir/COOKED.c.o CMakeFiles/LUCK_UP.dir/src/code/game/game.c.o CMakeFiles/LUCK_UP.dir/src/code/tools/tools.c.o CMakeFiles/LUCK_UP.dir/src/code/Player/player.c.o CMakeFiles/LUCK_UP.dir/src/code/Background/background.c.o CMakeFiles/LUCK_UP.dir/src/code/button/button.c.o CMakeFiles/LUCK_UP.dir/src/code/enemy/enemy.c.o CMakeFiles/LUCK_UP.dir/src/code/text/txt.c.o CMakeFiles/LUCK_UP.dir/src/code/menu/menu.c.o CMakeFiles/LUCK_UP.dir/src/code/load_menus/load_menus.c.o CMakeFiles/LUCK_UP.dir/src/code/slider/slider.c.o CMakeFiles/LUCK_UP.dir/gameplay/src/bullet.c.o CMakeFiles/LUCK_UP.dir/gameplay/src/collision.c.o CMakeFiles/LUCK_UP.dir/gameplay/src/enemy.c.o CMakeFiles/LUCK_UP.dir/gameplay/src/utils.c.o CMakeFiles/LUCK_UP.dir/src/code/audio_/audio.c.o | /usr/lib/x86_64-linux-gnu/libSDLmain.a /usr/lib/x86_64-linux-gnu/libSDL.so /usr/lib/x86_64-linux-gnu/libSDL_ttf.so /usr/lib/x86_64-linux-gnu/libSDL_image.so /usr/lib/x86_64-linux-gnu/libSDL_mixer.so
   FLAGS = -g
   LINK_LIBRARIES = /usr/lib/x86_64-linux-gnu/libSDLmain.a  /usr/lib/x86_64-linux-gnu/libSDL.so  /usr/lib/x86_64-linux-gnu/libSDL_ttf.so  /usr/lib/x86_64-linux-gnu/libSDL_image.so  /usr/lib/x86_64-linux-gnu/libSDL_mixer.so  -lm
   OBJECT_DIR = CMakeFiles/LUCK_UP.dir

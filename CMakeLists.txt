@@ -48,6 +48,9 @@ add_executable(LUCK_UP
         #gameplay/src/player.c
         gameplay/src/utils.c
         src/code/slider/slider.c
+        "src/code/audio /audio.h"
+        "src/code/audio /audio.c"
+        #crap.c
 )
 
 # Link libraries

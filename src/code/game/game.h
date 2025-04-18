@@ -62,7 +62,8 @@
 #define LOGO2_PATH "../src/assets/grphics/menu/txt_logo.png"
 
 
-#define MUSIC_PATH "../src/assets/audio/Azure - maybe in another life.mp3"
+#define MUSIC_PATH "../src/assets/audio/music.mp3"
+#define HOVER_SFX_PATH "../src/assets/audio/hover.wav"
 
 
 // gameplay :
@@ -289,6 +290,15 @@ typedef struct {
     // the real deal ...
     Menu *current_menu;
     M_node *current_node;
+
+
+
+
+
+    // audio stuff
+    Mix_Chunk *sfx; //single sfx wav format
+    Mix_Music *music; // to listen to your bad taste in music
+
 
 
 }Game;
