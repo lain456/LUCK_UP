@@ -80,7 +80,7 @@ M_node *M_link_Node(Menu* menu,M_node *parent)
   printf("Error in M_Create_Node\n");
   return NULL;
  }
- node->parent = parent;
+ node->back = parent;
  node->menu = menu;
 
  // if it has only one button it would prob be named "okay" and it would take you back to the parrent node , so no sub menus for that..    -lain
@@ -97,7 +97,7 @@ void node_Init(M_node *node,Menu *menu , int id)
  node->child_list = (M_node*)malloc(sizeof(M_node*)*menu->b_ct);
  node->menu =menu;
  node->id = id;
- node->parent = NULL;
+ node->back = NULL;
 };
 
 

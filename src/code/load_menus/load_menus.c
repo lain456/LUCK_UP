@@ -134,13 +134,13 @@ Menu options_menu(Game game)
     //new_menu.background = create_color_surface(game.width,game.height,255,255,255);
 
     // custom menu (general)
-    new_menu.b_ct =3;
+    new_menu.b_ct =4;
     new_menu.txt_ct =1;
-    new_menu.s_ct = 1;
+    new_menu.s_ct = 2;
     new_menu.t_margine =10; // useless in this case cuz we only have 1 txt
     new_menu.b_margine =25;
     new_menu.s_margine = 25;
-    char *button_strings[] = {"music : on","fullscreen : on ","return"};
+    char *button_strings[] = {"music : on","sfx : on","fullscreen : on ","return"};
 
 
 
@@ -173,6 +173,7 @@ Menu options_menu(Game game)
 
     Slider s = *create_slider(&game,(SDL_Rect){(WIDTH - game.x_button_size)*12/32 + game.x_button_size + new_menu.s_margine,(HEIGHT -game.y_slider_size)*27/64 ,game.x_slider_size,game.y_slider_size,});
     new_menu.slider_list[0] = s;
+    new_menu.slider_list[1] = *create_slider(&game,(SDL_Rect){(WIDTH - game.x_button_size)*12/32 + game.x_button_size + new_menu.s_margine,new_menu.buttonlist[1].b_rect.y + (new_menu.buttonlist[1].b_rect.h - game.y_slider_size ) /2    ,game.x_slider_size,game.y_slider_size,});
 
     return new_menu;
 }

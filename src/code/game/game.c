@@ -16,10 +16,12 @@ void Ini_Game(Game *game) {
         exit(1);
     }
 
-    if (Mix_OpenAudio(22050, MIX_DEFAULT_FORMAT, 4, 4096) < 0) {
-        printf("Mix_OpenAudio failed: %s\n", Mix_GetError());
+
+    if (Mix_OpenAudio(44100, MIX_DEFAULT_FORMAT, 2, 2048) < 0) {
+        printf("SDL_mixer Error: %s\n", Mix_GetError());
         exit(1);
     }
+
 
 
 
@@ -41,7 +43,7 @@ void Ini_Game(Game *game) {
     game->title = "LUCK UP";
     game->state = 1;
     game->quite = 0;
-    game->music_volume = 69 * 128 / 100; // Initial volume
+    game->music_volume = 10 ; // Initial volume
     game->screen = SDL_SetVideoMode(game->width, game->height, 32, SDL_SWSURFACE | SDL_RESIZABLE);
     if (!game->screen) {
         printf("SDL_SetVideoMode failed: %s\n", SDL_GetError());
@@ -95,12 +97,24 @@ void Ini_Game(Game *game) {
 
 
 
-
-
-
     // music stuff
     game->music = NULL;
-    game->music_volume = 69 ;
+    game->music_volume = 69;
+    game->sfx_volume = 10;
+
+
+
+
+
+    //doing some music
+    game->sfx = Mix_LoadWAV(HOVER_SFX_PATH);
+
+
+
+
+
+
+
 
 }
 

@@ -164,7 +164,7 @@ typedef struct
 
 typedef struct M_node
 {
-    struct M_node *parent;
+    struct M_node *back;
     Menu *menu;
     int id;
     // child_list size is included in the Menu->b_ct  AKA number of buttons
@@ -238,7 +238,7 @@ typedef struct {
 
 
 
-    int music_volume;
+    int back;
     int fullscreen;
     int state;
     int quite;
@@ -298,6 +298,8 @@ typedef struct {
     // audio stuff
     Mix_Chunk *sfx; //single sfx wav format
     Mix_Music *music; // to listen to your bad taste in music
+    int music_volume;
+    int sfx_volume;
 
 
 

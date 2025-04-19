@@ -101,22 +101,33 @@ void update_buttons(Game *game, Button *buttons,int size)
             }else
             {
                 buttons[i].isHovered = 0;
+                buttons[i].isPressed = 0;
+                buttons[i].isClicked = 0;
             }
 
             // if it's beiing pressed ... can be needed for animations
             if (is_pressed(game,&buttons[i].b_rect)){
               buttons[i].isPressed = 1;
-              }else{
-                buttons[i].isPressed = 0;
             }
 
 
             // if it's clicked , used for activating functions ,
-            if (is_clicked(game,&buttons[i].b_rect)){
+            if (is_clicked(game,&buttons[i].b_rect) && buttons[i].isPressed == 1){
               buttons[i].isClicked = 1;
-              }else{
-                buttons[i].isClicked = 0;
-            }
+              }else
+              {
+                  buttons[i].isClicked = 0;
+              }
+
+
+
+
+        if (game->current_node->menu-> buttonlist[i].isHovered && !game->current_node->menu-> buttonlist[i].b_switch)
+        {
+            Mix_PlayChannel(-1, game->sfx, 0);
+        }
+        game->current_node->menu-> buttonlist[i].b_switch = game->current_node->menu-> buttonlist[i].isHovered;
+
 
     }
 
@@ -142,8 +153,6 @@ void render_button(Game *game,Button *b,int hover)
     if(b->isHovered) {
         SDL_BlitSurface(b->hovered,NULL,game->screen,&b->rect);
         SDL_BlitSurface(b->txt.surf, NULL, game->screen, &b->txt.rect);   // render text
-
-
 
 
 

@@ -735,7 +735,7 @@ int displayMenu(SDL_Surface *screen, TTF_Font *font) {
 }
 
 // gameplay test
-int test5()
+int test5(Game *game)
 {
 
 
@@ -767,14 +767,7 @@ int test5()
         return 1;
     }
 
-    SDL_Surface *screen = SDL_SetVideoMode(WIDTH, HEIGHT, 32, SDL_SWSURFACE);
-    if (screen == NULL) {
-        printf("SDL_SetVideoMode Error: %s\n", SDL_GetError());
-        TTF_CloseFont(font);
-        TTF_Quit();
-        SDL_Quit();
-        return 1;
-    }
+
 
     Player player;
     initPlayer(&player);
@@ -799,9 +792,9 @@ int test5()
             } else if (e.type == SDL_KEYDOWN || e.type == SDL_KEYUP) {
                 handlePlayerMovement(&player, e);
                 if (e.type == SDL_KEYDOWN && e.key.keysym.sym == SDLK_f && (SDL_GetModState() & KMOD_CTRL)) {
-                    toggleFullscreen(screen);
+                    toggleFullscreen(game->screen);
                 } else if (e.type == SDL_KEYDOWN && e.key.keysym.sym == SDLK_ESCAPE) {
-                    int playAgain = displayMenu(screen, font);
+                    int playAgain = displayMenu(game->screen, font);
                     if (playAgain == 0) {
                         quit = 1;
                     } else {
@@ -834,7 +827,7 @@ int test5()
         }
 
         if (player.health <= 0) {
-            int playAgain = displayMenu(screen, font);
+            int playAgain = displayMenu(game->screen, font);
             if (playAgain == 0) {
                 quit = 1;
             } else {
@@ -849,21 +842,17 @@ int test5()
             }
         }
 
-        SDL_FillRect(screen, NULL, SDL_MapRGB(screen->format, 0, 0, 0));
+        SDL_FillRect(game->screen, NULL, SDL_MapRGB(game->screen->format, 0, 0, 0));
 
-        renderPlayer(screen, &player);
-        renderBullets(screen, bullets, bulletCount);
-        renderEnemies(screen, enemies, enemyCount);
-        renderStatus(screen, player.health, bulletCount, player.level, font);
+        renderPlayer(game->screen, &player);
+        renderBullets(game->screen, bullets, bulletCount);
+        renderEnemies(game->screen, enemies, enemyCount);
+        renderStatus(game->screen, player.health, bulletCount, player.level, font);
 
-        SDL_Flip(screen);
+        SDL_Flip(game->screen);
 
         SDL_Delay(16);
     }
-    TTF_CloseFont(font);
-    TTF_Quit();
-    SDL_Quit();
-    return 0;
 
 
 
@@ -871,7 +860,37 @@ int test5()
 
 
 
+
+    game->state = 1;
+    game->mouse_pressed = 0;
+    return 1;
 }
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
 
 
 // audio import
@@ -1141,20 +1160,82 @@ int fat_ass_audio_test()
 int test69() {
 
 Game game;
+
+    // init
     Ini_Game(&game);
     load_background(&game);
+    game.music = loadMusic(MUSIC_PATH);
+    game.sfx = Mix_LoadWAV(HOVER_SFX_PATH);
+    Mix_PlayMusic(game.music, -1);
+
+
     printf("testing ... \n");
 
 
-    //doing some music
-    game.music = loadMusic(MUSIC_PATH);
-    if (game.music == NULL) {
-        Mix_CloseAudio();
-        SDL_Quit();
-        return 1;
-    }
 
-    Mix_PlayMusic(game.music, -1);
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
 
 
 
@@ -1290,13 +1371,13 @@ Game game;
 
             case 2: //option menu
             {
-                // auto  on / off
+                // auto  on / off music
 
 
 
                 if (game.current_node->menu-> buttonlist[0].isClicked )
                 {
-                    update_txt(&game.current_node->menu->txtlist[0] ,"yeah that button doesn't work...yet",BLACK,game.main_font);
+                    update_txt(&game.current_node->menu->txtlist[0] ,"yeah that  work...yet",BLACK,game.main_font);
 
                     // fixed a bug here     -lain
                     switch (game.music_volume )
@@ -1317,15 +1398,57 @@ Game game;
 
 
 
+
+
+
+
+
+                // auto  on / off sfx
+
+
+
+                if (game.current_node->menu-> buttonlist[1].isClicked )
+                {
+                    //update_txt(&game.current_node->menu->txtlist[1] ,"yeah that button doesn't work...yet",BLACK,game.main_font);
+                    printf("gp %d , gr %d , mv %d sfv %d\n",game.mouse_pressed,game.released_mouse,game.music_volume,game.sfx_volume);
+
+                    // fixed a bug here     -lain
+                    switch (game.sfx_volume )
+                    {
+                    case 0:
+                        {
+                            game.sfx_volume = 69;
+                            break;
+                        }
+                    default:
+                        {
+                            game.sfx_volume = 0;
+                            break;
+                        }
+                    }
+                    break;
+                }
+
+
+
                 update_slider(&game,&game.current_node->menu->slider_list[0],game.music_volume);
+                update_slider(&game,&game.current_node->menu->slider_list[1],game.sfx_volume);
                 //the vol is being updated
                 game.music_volume = game.current_node->menu->slider_list[0].val;
+                game.sfx_volume = game.current_node->menu->slider_list[1].val;
 
 
 
 
 
 
+
+
+
+
+
+
+                // txt change
                 if (game.music_volume!=0)
                 {
                     update_txt(&game.current_node->menu->buttonlist[0].txt,"music on",GOLD,NULL);
@@ -1336,6 +1459,18 @@ Game game;
 
                 }
 
+                if (game.sfx_volume!=0)
+                {
+                    update_txt(&game.current_node->menu->buttonlist[1].txt,"sfx : on",GOLD,NULL);
+
+                }else
+                {
+                    update_txt(&game.current_node->menu->buttonlist[1].txt,"sfx : off",GOLD,NULL);
+
+                }
+
+
+
 
 
 
@@ -1345,12 +1480,12 @@ Game game;
                 {
                     case 0:
                         {
-                            update_txt(&game.current_node->menu->buttonlist[1].txt,"fullscreen on",GOLD,game.mini_font);
+                            update_txt(&game.current_node->menu->buttonlist[2].txt,"fullscreen on",GOLD,game.mini_font);
                             break;
                         }
                     default:
                         {
-                            update_txt(&game.current_node->menu->buttonlist[1].txt,"fullscreen off",GOLD,game.mini_font);
+                            update_txt(&game.current_node->menu->buttonlist[2].txt,"fullscreen off",GOLD,game.mini_font);
                             break;
                         }
 
@@ -1359,7 +1494,7 @@ Game game;
 
 
 
-                if (game.current_node->menu-> buttonlist[1].isClicked )
+                if (game.current_node->menu-> buttonlist[2].isClicked )
                 {
                     toggle_fullscreen(&game) ;
 
@@ -1369,12 +1504,14 @@ Game game;
 
 
 
-                if (game.current_node->menu-> buttonlist[2].isClicked )
+                if (game.current_node->menu-> buttonlist[3].isClicked )
                 {
                     update_txt(&game.current_node->menu->txtlist[0] ," W I P ig....",BLACK,game.big_main_font);
                     game.current_node = &n1;
                     break;
                 }
+
+
 
 
                 break;
@@ -1429,9 +1566,10 @@ Game game;
 
 
         SDL_Flip(game.screen);
-        printf("gp %d , gr %d , mv %d\n",game.mouse_pressed,game.released_mouse,game.music_volume);
+
         game.event.button.button = 0;
         Mix_VolumeMusic( MIX_MAX_VOLUME *  game.music_volume/100 );
+        Mix_VolumeChunk(game.sfx, MIX_MAX_VOLUME * game.sfx_volume/100);
     }
 
 
@@ -1479,7 +1617,7 @@ int main(int argc, char *argv[]){
 
     //return test5();
     //return fat_ass_audio_test();
-    return test69();
+    //return test69();
 
 
 
@@ -1488,11 +1626,14 @@ int main(int argc, char *argv[]){
 
 
 
-
+    //init phase...
     printf("pizza = %d\n",pizza());
     Game game;
     Ini_Game(&game);
     load_background(&game);
+    game.music = loadMusic(MUSIC_PATH);
+    game.sfx = Mix_LoadWAV(HOVER_SFX_PATH);
+    Mix_PlayMusic(game.music, -1);
     printf("testing ... \n");
 
 
@@ -1509,10 +1650,27 @@ int main(int argc, char *argv[]){
     node_Init(&n0,&exit,0 );
     node_Init(&n1,&play,1);
     node_Init(&n2,&options,2);
-    //WIP
     node_Init(&n,&GET_YO_SORRY_ASS_TO_WORK,-1);
 
-    printf("%p\n",n0.parent);
+
+
+    n0.back = &n1; // get back to main
+    n1.back = &n0; // get to exit
+    n2.back = &n1;
+    n.back = &n1;
+
+
+
+
+
+
+
+
+
+    //WIP
+
+
+    printf("%d\n",n0.back->id);
 
     //n1.parent = &n0;
 
@@ -1540,16 +1698,24 @@ int main(int argc, char *argv[]){
     while (!game.quite) {
         SDL_GetMouseState(&game.x_mouse,&game.y_mouse);
         game.released_mouse = 0;
+        game.mouse_pressed =0;
         while (SDL_PollEvent(&game.event)) {
-            if (game.event.type == SDL_QUIT) {
+            switch (game.event.type) {
+            case SDL_KEYDOWN: // Key pressed
+                if (game.event.key.keysym.sym == SDLK_ESCAPE && game.state ==1) {
+                    game.current_node = game.current_node->back;
+                }
+                break;
+            case SDL_QUIT: // Window close button
                 game.quite = 1;
+                break;
             }
             if (game.event.type == SDL_MOUSEBUTTONDOWN) {
                 game.mouse_pressed = 1;
                 //printf("Mouse button pressed %d\n", game.event.button.button);
             }
             if (game.event.type == SDL_MOUSEBUTTONUP) {
-                game.mouse_pressed = 0;
+                //game.mouse_pressed = 0;
                 //printf("Mouse button released %d\n", game.event.button.button);
                 game.released_mouse = game.event.button.button;
                 game.event.button.button = 0;
@@ -1558,40 +1724,48 @@ int main(int argc, char *argv[]){
 
 
 
-        update_buttons(&game,game.current_node->menu->buttonlist,game.current_node->menu->b_ct);
-
-
-
-        switch (game.current_node->id)
+        // the big switch
+        switch (game.state)
         {
 
-        case -1:
+            case 1:{
+
+
+
+            update_buttons(&game,game.current_node->menu->buttonlist,game.current_node->menu->b_ct);
+
+
+
+            switch (game.current_node->id)
             {
-                if (game.current_node->menu-> buttonlist[0].isClicked )
+
+            case -1:
                 {
-                    game.current_node = &n1;
-                }
-                break;
-            }
-
-
-        case 0 :
-            {
-                if (game.current_node->menu-> buttonlist[0].isClicked )
-                {
-                    game.current_node = &n1;
-
+                    if (game.current_node->menu-> buttonlist[0].isClicked )
+                    {
+                        game.current_node = &n1;
+                    }
+                    break;
                 }
 
 
-                if (game.current_node->menu-> buttonlist[1].isClicked )
+            case 0 :
                 {
-                    game.quite = 1;
+                    if (game.current_node->menu-> buttonlist[0].isClicked )
+                    {
+                        game.current_node = &n1;
+
+                    }
+
+
+                    if (game.current_node->menu-> buttonlist[1].isClicked )
+                    {
+                        game.quite = 1;
+                    }
+
+
+                    break;
                 }
-
-
-                break;
-            }
             case 1:
                 {
 
@@ -1602,7 +1776,7 @@ int main(int argc, char *argv[]){
                     {
                         update_txt(&game.current_node->menu->buttonlist[0].txt,"P L A Y",GOLD,NULL);
                         printf("we are about to play\n");
-                        return  test5();
+                        game.state = 0;
                         break;
 
                     }
@@ -1625,17 +1799,17 @@ int main(int argc, char *argv[]){
 
 
 
-                // quite
+                    // quite
                     if (game.current_node->menu-> buttonlist[3].isClicked ){
                         game.current_node = &n0;
                         break;
                     }
 
-                // HELP
-                if (game.current_node->menu-> buttonlist[4].isClicked ){
-                    game.current_node = &n;
-                    break;
-                }
+                    // HELP
+                    if (game.current_node->menu-> buttonlist[4].isClicked ){
+                        game.current_node = &n;
+                        break;
+                    }
 
 
 
@@ -1645,57 +1819,162 @@ int main(int argc, char *argv[]){
                 }
 
             case 2:
-            {
-
-               if (game.current_node->menu-> buttonlist[0].isClicked )
                 {
-                    update_txt(&game.current_node->menu->txtlist[0] ,"yeah that button doesn't work...",BLACK,game.main_font);
-                    game.current_node->menu->slider_list[0].val -= 10;
 
-                    game.current_node->menu->buttonlist[0].b_switch = ! game.current_node->menu->buttonlist[0].b_switch;
-                    //printf("switching..\n");
-                    if (game.current_node->menu->buttonlist[0].b_switch)
+                    // auto  on / off music
+
+
+
+                    if (game.current_node->menu-> buttonlist[0].isClicked )
                     {
-                        update_txt(&game.current_node->menu->buttonlist[0].txt,"volume off",GOLD,NULL);
-                        game.current_node->menu->slider_list[0].val = 0;
-                    }else
-                    {
-                        update_txt(&game.current_node->menu->buttonlist[0].txt,"volume on",GOLD,NULL);
-                        //update_slider(&game,&game.current_node->menu->slider_list[0],69);
-                        game.current_node->menu->slider_list[0].val = 69;
-                        // this code works , the button ineed move between 0 and 69 as i switch on and off volume
+                        update_txt(&game.current_node->menu->txtlist[0] ,". . . ",BLACK,game.big_main_font);
+
+                        // fixed a bug here     -lain
+                        switch (game.music_volume )
+                        {
+                        case 0:
+                            {
+                                game.music_volume = 69;
+                                break;
+                            }
+                        default:
+                            {
+                                game.music_volume = 0;
+                                break;
+                            }
+                        }
                     }
 
-                }
-                if (game.current_node->menu-> buttonlist[1].isClicked )
-                {
-                    toggle_fullscreen(&game) ;
-                }
-                if (game.current_node->menu-> buttonlist[2].isClicked )
-                {
-                    update_txt(&game.current_node->menu->txtlist[0] ," W I P ig....",BLACK,game.big_main_font);
-                    game.current_node = &n1;
+
+
+
+
+
+
+
+
+                    // auto  on / off sfx
+
+
+
+                    if (game.current_node->menu-> buttonlist[1].isClicked )
+                    {
+                        //update_txt(&game.current_node->menu->txtlist[1] ,"yeah that button doesn't work...yet",BLACK,game.main_font);
+                        printf("gp %d , gr %d , mv %d sfv %d\n",game.mouse_pressed,game.released_mouse,game.music_volume,game.sfx_volume);
+
+                        // fixed a bug here     -lain
+                        switch (game.sfx_volume )
+                        {
+                        case 0:
+                            {
+                                game.sfx_volume = 69;
+                                break;
+                            }
+                        default:
+                            {
+                                game.sfx_volume = 0;
+                                break;
+                            }
+                        }
+                        break;
+                    }
+
+
+
+                    update_slider(&game,&game.current_node->menu->slider_list[0],game.music_volume);
+                    update_slider(&game,&game.current_node->menu->slider_list[1],game.sfx_volume);
+                    //the vol is being updated
+                    game.music_volume = game.current_node->menu->slider_list[0].val;
+                    game.sfx_volume = game.current_node->menu->slider_list[1].val;
+
+
+
+
+
+
+
+
+
+
+
+
+                    // txt change
+                    if (game.music_volume!=0)
+                    {
+                        update_txt(&game.current_node->menu->buttonlist[0].txt,"music on",GOLD,NULL);
+                        //update_txt(&game.current_node->menu->txtlist[0] ," :D  ",BLACK,game.big_main_font);
+
+                    }else
+                    {
+                        update_txt(&game.current_node->menu->buttonlist[0].txt,"music off",GOLD,NULL);
+
+                    }
+
+                    if (game.sfx_volume!=0)
+                    {
+                        update_txt(&game.current_node->menu->buttonlist[1].txt,"sfx : on",GOLD,NULL);
+
+                    }else
+                    {
+                        update_txt(&game.current_node->menu->buttonlist[1].txt,"sfx : off",GOLD,NULL);
+                        //update_txt(&game.current_node->menu->txtlist[0] ," no sfx ?",BLACK,game.big_main_font);
+
+                    }
+
+
+
+
+
+
+
+
+                    switch (game.fullscreen)
+                    {
+                    case 0:
+                        {
+                            update_txt(&game.current_node->menu->buttonlist[2].txt,"fullscreen on",GOLD,game.mini_font);
+                            break;
+                        }
+                    default:
+                        {
+                            update_txt(&game.current_node->menu->buttonlist[2].txt,"fullscreen off",GOLD,game.mini_font);
+                            break;
+                        }
+
+                    }
+
+
+
+
+                    if (game.current_node->menu-> buttonlist[2].isClicked )
+                    {
+                        toggle_fullscreen(&game) ;
+
+                        break;
+                    }
+
+
+
+
+                    if (game.current_node->menu-> buttonlist[3].isClicked )
+                    {
+                        update_txt(&game.current_node->menu->txtlist[0] ," welcome back :D",BLACK,game.big_main_font);
+                        game.current_node = &n1;
+                        break;
+                    }
+
+
+
+
                     break;
                 }
-                //handle_slider_input(&game,&game.current_node->menu->slider_list[0]);
-                update_slider(&game,&game.current_node->menu->slider_list[0],game.current_node->menu->slider_list[0].val);
-                //the vol is being updated
-                game.music_volume = game.current_node->menu->slider_list[0].val;
-                /*
-                if (is_clicked(&game,&game.current_node->menu->slider_list[0].b_rect) )
-                {
-                    printf("clicked");
-                }
-                if (is_hovered(&game,&game.current_node->menu->slider_list[0].b_rect) )
-                {
-                    printf("hovered");
-                }
-                if (is_pressed(&game,&game.current_node->menu->slider_list[0].b_rect))
-                {
-                    printf("pressed");
-                }
-                */
 
+
+
+
+
+            default:
+                printf("get out ");
                 break;
             }
 
@@ -1705,43 +1984,40 @@ int main(int argc, char *argv[]){
 
 
 
-            default:
-                printf("get out ");
+
+
+
+
+
+
+
+
+
+
+
+
+            render_background(&game);
+            render_menu(&game,game.current_node->menu);
+
+
+            SDL_Flip(game.screen);
+            Mix_VolumeMusic( MIX_MAX_VOLUME *  game.music_volume/100 );
+            Mix_VolumeChunk(game.sfx, MIX_MAX_VOLUME * game.sfx_volume/100);
+
+
+
+
             break;
-
-
-
-
-
+            }
+            case 0:
+                {
+                    test5(&game);
+                    break;
+                }
         }
 
 
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-        render_background(&game);
-
-
-        render_menu(&game,game.current_node->menu);
-        printf("gp %d , gr %d , mv %d\n",game.mouse_pressed,game.released_mouse,game.music_volume);
-
-
-        SDL_Flip(game.screen);
-
+        //printf("gp %d , gr %d , mv %d\n",game.mouse_pressed,game.released_mouse,game.music_volume);
     }
 
 
