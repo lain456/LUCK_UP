@@ -1,0 +1,215 @@
+//main.c
+#include <SDL/SDL.h>
+#include <SDL/SDL_image.h>
+#include "menu.h"
+
+int main(int argc, char *argv[]) {
+    SDL_Init(SDL_INIT_VIDEO);
+    SDL_Surface *screen = SDL_SetVideoMode(1920, 1080, 32, SDL_HWSURFACE);
+    SDL_WM_SetCaption("MiniMap SDL", NULL);
+
+    SDL_Surface *background = IMG_Load("background.png");
+    SDL_Surface *joueur = IMG_Load("perso.png");
+
+    SDL_Surface *platFixe = IMG_Load("platFixe.png");
+    SDL_Surface *maskFixe = IMG_Load("maskFixe.png");
+    SDL_Surface *platMobile = IMG_Load("platMobile.png");
+
+    SDL_Rect posPerso = {100, 100, joueur->w, joueur->h};
+    SDL_Rect camera = {0, 0, 1920, 1080};
+
+    SDL_Rect posPlatFixe = {600, 400, platFixe->w, platFixe->h};
+    SDL_Rect posPlatMobile = {800, 300, platMobile->w, platMobile->h};
+
+    minimap m;
+    initialiserMinimap(&m);
+
+    int continuer = 1;
+    SDL_Event event;
+    int bgAnimTimer = 0;
+
+    while (continuer) {
+        while (SDL_PollEvent(&event)) {
+            if (event.type == SDL_QUIT)
+                continuer = 0;
+            else if (event.type == SDL_KEYDOWN) {
+                SDL_Rect nextPos = posPerso;
+                switch (event.key.keysym.sym) {
+                    case SDLK_RIGHT: nextPos.x += 10; break;
+                    case SDLK_LEFT:  nextPos.x -= 10; break;
+                    case SDLK_UP:    nextPos.y -= 10; break;
+                    case SDLK_DOWN:  nextPos.y += 10; break;
+                }
+                if (!collision_parfaite(maskFixe, nextPos, posPlatFixe)) {
+                    posPerso = nextPos;
+                    if (collision_BB(posPerso, posPlatMobile)) {
+                        bgAnimTimer = 10;
+                        posPlatMobile.x = -1000;
+                        posPlatMobile.y = -1000;
+                    }
+                } else {
+                    bgAnimTimer = 10;
+                }
+            }
+        }
+
+        if (bgAnimTimer > 0) {
+            SDL_FillRect(screen, NULL, SDL_MapRGB(screen->format, 255, 50, 50));
+            bgAnimTimer--;
+        } else {
+            SDL_BlitSurface(background, NULL, screen, NULL);
+        }
+
+        SDL_BlitSurface(platFixe, NULL, screen, &posPlatFixe);
+        SDL_BlitSurface(platMobile, NULL, screen, &posPlatMobile);
+        SDL_BlitSurface(joueur, NULL, screen, &posPerso);
+
+        MAJMinimap(posPerso, &m, camera, 20);
+        afficherMinimap(m, screen);
+
+        SDL_Flip(screen);
+    }
+
+    libererMinimap(&m);
+    SDL_FreeSurface(background);
+    SDL_FreeSurface(joueur);
+    SDL_FreeSurface(platFixe);
+    SDL_FreeSurface(maskFixe);
+    SDL_FreeSurface(platMobile);
+    SDL_Quit();
+
+    return 0;
+}
+
+
+//menu.c
+#include "menu.h"
+#include <SDL/SDL_image.h>
+
+void initialiserMinimap(minimap *m) {
+    m->img_minimap = IMG_Load("minimap_bg.png");
+    m->img_joueur = IMG_Load("joueur.png");
+    m->pos_minimap.x = 10;
+    m->pos_minimap.y = 10;
+    m->pos_minimap.w = m->img_minimap->w;
+    m->pos_minimap.h = m->img_minimap->h;
+    m->pos_joueur.x = 0;
+    m->pos_joueur.y = 0;
+}
+
+void MAJMinimap(SDL_Rect posJoueur, minimap *m, SDL_Rect camera, int redimensionnement) {
+    SDL_Rect posABS;
+    posABS.x = posJoueur.x + camera.x;
+    posABS.y = posJoueur.y + camera.y;
+    m->pos_joueur.x = (posABS.x * redimensionnement) / 100;
+    m->pos_joueur.y = (posABS.y * redimensionnement) / 100;
+}
+
+void afficherMinimap(minimap m, SDL_Surface *screen) {
+    SDL_BlitSurface(m.img_minimap, NULL, screen, &m.pos_minimap);
+    SDL_Rect pos_joueur_affiche;
+    pos_joueur_affiche.x = m.pos_minimap.x + m.pos_joueur.x;
+    pos_joueur_affiche.y = m.pos_minimap.y + m.pos_joueur.y;
+    SDL_BlitSurface(m.img_joueur, NULL, screen, &pos_joueur_affiche);
+}
+
+void libererMinimap(minimap *m) {
+    SDL_FreeSurface(m->img_minimap);
+    SDL_FreeSurface(m->img_joueur);
+}
+
+int collision_parfaite(SDL_Surface *mask, SDL_Rect joueur, SDL_Rect posMasque) {
+    int i, j;
+    Uint32 pixel;
+    Uint8 r, g, b;
+    for (i = 0; i < joueur.w; i++) {
+        for (j = 0; j < joueur.h; j++) {
+            int x = joueur.x + i - posMasque.x;
+            int y = joueur.y + j - posMasque.y;
+            if (x >= 0 && x < mask->w && y >= 0 && y < mask->h) {
+                pixel = getpixel(mask, x, y);
+                SDL_GetRGB(pixel, mask->format, &r, &g, &b);
+                if (r > 250 && g > 250 && b > 250) return 1;
+            }
+        }
+    }
+    return 0;
+}
+
+Uint32 getpixel(SDL_Surface *surface, int x, int y) {
+    int bpp = surface->format->BytesPerPixel;
+    Uint8 *p = (Uint8 *)surface->pixels + y * surface->pitch + x * bpp;
+    switch (bpp) {
+        case 1: return *p;
+        case 2: return *(Uint16 *)p;
+        case 3:
+            if (SDL_BYTEORDER == SDL_BIG_ENDIAN)
+                return p[0] << 16 | p[1] << 8 | p[2];
+            else
+                return p[0] | p[1] << 8 | p[2] << 16;
+        case 4: return *(Uint32 *)p;
+        default: return 0;
+    }
+}
+
+int collision_BB(SDL_Rect a, SDL_Rect b) {
+    return (a.x < b.x + b.w && a.x + a.w > b.x && a.y < b.y + b.h && a.y + a.h > b.y);
+}
+
+
+//menu.h
+#ifndef MENU_H
+#define MENU_H
+#include <SDL/SDL.h>
+
+typedef struct {
+    SDL_Surface *img_minimap;
+    SDL_Rect pos_minimap;
+    SDL_Surface *img_joueur;
+    SDL_Rect pos_joueur;
+} minimap;
+
+void initialiserMinimap(minimap *m);
+void MAJMinimap(SDL_Rect posJoueur, minimap *m, SDL_Rect camera, int redimensionnement);
+void afficherMinimap(minimap m, SDL_Surface *screen);
+void libererMinimap(minimap *m);
+
+int collision_parfaite(SDL_Surface *mask, SDL_Rect joueur, SDL_Rect posMasque);
+int collision_BB(SDL_Rect a, SDL_Rect b);
+Uint32 getpixel(SDL_Surface *surface, int x, int y);
+
+#endif
+
+
+//makefile
+# Nom de l'exécutable
+EXEC = minimap
+
+# Fichiers sources
+SRC = main.c menu.c
+
+# Fichiers objets
+OBJ = $(SRC:.c=.o)
+
+# Compilateur
+CC = gcc
+
+# Flags de compilation
+CFLAGS = -Wall -g -I/usr/include/SDL
+LDFLAGS = -lSDL -lSDL_image
+
+# Règle par défaut
+all: $(EXEC)
+
+$(EXEC): $(OBJ)
+	$(CC) -o $@ $^ $(LDFLAGS)
+
+%.o: %.c
+	$(CC) -c $< -o $@ $(CFLAGS)
+
+# Nettoyage
+clean:
+	rm -f $(OBJ) $(EXEC)
+
+# Rebuild complet
+rebuild: clean all
