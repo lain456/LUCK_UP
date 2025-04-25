@@ -1,0 +1,52 @@
+Quelle est la capitale de la France ?
+Paris
+Londres
+Berlin
+a
+Quel est le plus grand océan ?
+Pacifique
+Atlantique
+Indien
+a
+Combien font 2 + 2 ?
+3
+4
+5
+b
+Quel est le symbole chimique de l'eau ?
+H2O
+O2
+CO2
+a
+Qui a peint la Joconde ?
+Picasso
+Léonard de Vinci
+Van Gogh
+b
+Quelle est la monnaie du Japon ?
+Yuan
+Dollar
+Yen
+c
+Quelle est la planete la plus proche du Soleil ?
+Mars
+Mercure
+Vénus
+b
+kodes est  la capitale de ?
+palestine
+france
+maroc
+a
+combien y'a t-il dz minute dans une heure ?
+22
+65
+60
+c
+que font 5+2*5 ?
+35
+15
+0
+b
+
+
